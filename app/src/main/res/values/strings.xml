@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">YKProperties</string>
+    <string name="login_logo">Login Logo</string>
+    <string name="welcome_to_ykproperties">Welcome to YKProperties</string>
+    <string name="choose_sign_in_method">Choose Sign in method</string>
+    <string name="search_for_products">Search For Products</string>
+    <string name="categories">Categories</string>
+</resources>
