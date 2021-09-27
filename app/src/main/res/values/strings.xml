@@ -5,4 +5,6 @@
     <string name="choose_sign_in_method">Choose Sign in method</string>
     <string name="search_for_products">Search For Products</string>
     <string name="categories">Categories</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>

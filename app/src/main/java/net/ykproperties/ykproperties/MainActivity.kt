@@ -2,8 +2,15 @@ package net.ykproperties.ykproperties
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.ykproperties.ykproperties.Model.ProductModelClass
@@ -16,16 +23,30 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var toolbar: Toolbar
     lateinit var rvItems: RecyclerView
+    lateinit var toggle: ActionBarDrawerToggle
+    lateinit var drawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        rvItems = findViewById(R.id.rvItems)
         toolbar = findViewById(R.id.toolBar)
 //        toolbar.title = ""
-        toolbar.navigationIcon = null
+//        toolbar.navigationIcon = null
         setSupportActionBar(toolbar)
+
+
+
+        drawerLayout = findViewById(R.id.drawerLayout)
+
+        toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        rvItems = findViewById(R.id.rvItems)
+
 
         // Instance of users list using the data model class.
         val productsList: ArrayList<ProductModelClass> = ArrayList()
@@ -68,6 +89,8 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
+//        productsList
+
         // Set the LayoutManager that this RecyclerView will use.
         rvItems.layoutManager = GridLayoutManager(this, 2)
         // Adapter class is initialized and list is passed in the param.
@@ -77,8 +100,29 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+        Toast.makeText(this,"Hello", Toast.LENGTH_SHORT).show()
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+
+        return super.onSupportNavigateUp()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_top, menu)
         return true
     }
 

@@ -1,19 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
     <item
-        android:id="@+id/miFilter"
-        android:icon="@drawable/ic_filter"
-        android:title="Filter"
-        app:showAsAction="always"/>
+        android:id="@+id/miHome"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+
     <item
-        android:icon="@drawable/ic_menu"
-        android:title=""
-        app:showAsAction="always">
+        android:id="@+id/miMessage"
+        android:icon="@drawable/ic_message"
+        android:title="Messages" />
+
+    <item
+        android:id="@+id/miFavorites"
+        android:icon="@drawable/ic_favorite"
+        android:title="Favorites" />
+    favorite
+    <item
+        android:id="@+id/miSettings"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings" />
+
+    <item
+        android:title="Profile">
+
         <menu>
+
             <item
                 android:id="@+id/miLogout"
+                android:icon="@drawable/ic_logout"
                 android:title="Logout" />
+
         </menu>
+
+    </item>
+
+    <item
+        android:title="Communicate">
+
+        <menu>
+
+            <item
+                android:id="@+id/miShare"
+                android:icon="@drawable/ic_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/miRate"
+                android:icon="@drawable/ic_rate_review"
+                android:title="Rate us" />
+
+        </menu>
+
     </item>
 </menu>

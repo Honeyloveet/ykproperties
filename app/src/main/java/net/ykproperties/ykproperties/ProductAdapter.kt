@@ -43,6 +43,7 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
 
         val item = items.get(position)
 
+        holder.tvProductIdGridV.text = item.title
         holder.tvTitleGridV.text = item.title
         holder.tvPriceGridV.text = "${item.price} - For SALE"
         Glide.with(context).load(item.imgUrl).into(holder.ivItemsGridV)
@@ -68,5 +69,6 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
         val tvTitleGridV = view.findViewById<TextView>(R.id.tvTitleGridV)
         val tvPriceGridV = view.findViewById<TextView>(R.id.tvPriceGridV)
         val ivItemsGridV = view.findViewById<ImageView>(R.id.ivItemsGridV)
+        val tvProductIdGridV = view.findViewById<TextView>(R.id.tvProductIdGridV)
     }
 }
