@@ -1,5 +1,6 @@
 package net.ykproperties.ykproperties
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
@@ -98,6 +99,28 @@ class MainActivity : AppCompatActivity() {
         // adapter instance is set to the recyclerview to inflate the items.
         rvItems.adapter = itemAdapter
 
+        itemAdapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener{
+            override fun onItemClick(position: Int) {
+//                Toast.makeText(this@MainActivity,"You Clicked on item no. $position",Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(this@MainActivity, ProductDetails::class.java)
+                intent.putExtra("id",productsList[position].id)
+                intent.putExtra("title",productsList[position].title)
+                intent.putExtra("price",productsList[position].price)
+                intent.putExtra("imgUrl",productsList[position].imgUrl)
+                intent.putExtra("category",productsList[position].category)
+                intent.putExtra("description",productsList[position].description)
+                intent.putExtra("posted",productsList[position].posted)
+                intent.putExtra("imgUrl",productsList[position].imgUrl)
+                intent.putExtra("location",productsList[position].location)
+                intent.putExtra("size",productsList[position].size)
+                intent.putExtra("year",productsList[position].year)
+
+                startActivity(intent)
+
+            }
+
+        })
     }
 
     override fun onBackPressed() {

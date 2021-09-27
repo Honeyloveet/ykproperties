@@ -13,6 +13,16 @@ import com.bumptech.glide.Glide
 class ProductAdapter (val context: Context, val items: ArrayList<ProductModelClass>) :
     RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
+    private lateinit var mListener : onItemClickListener
+
+    interface onItemClickListener{
+        fun onItemClick(position: Int)
+    }
+
+    fun setOnItemClickListener(listener: onItemClickListener) {
+        mListener = listener
+    }
+
     /**
      * Inflates the item views which is designed in xml layout file
      *
@@ -25,7 +35,7 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
                 R.layout.grid_item_view,
                 parent,
                 false
-            )
+            ),mListener
         )
     }
 
@@ -64,11 +74,18 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
     /**
      * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
      */
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View, listener: onItemClickListener) : RecyclerView.ViewHolder(view) {
         // Holds the TextView that will add each item to
         val tvTitleGridV = view.findViewById<TextView>(R.id.tvTitleGridV)
         val tvPriceGridV = view.findViewById<TextView>(R.id.tvPriceGridV)
         val ivItemsGridV = view.findViewById<ImageView>(R.id.ivItemsGridV)
         val tvProductIdGridV = view.findViewById<TextView>(R.id.tvProductIdGridV)
+
+        init {
+            view.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
+        }
+
     }
 }

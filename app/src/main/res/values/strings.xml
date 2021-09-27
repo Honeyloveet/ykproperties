@@ -7,4 +7,7 @@
     <string name="categories">Categories</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="product_images">Product Images</string>
+    <string name="id">ID</string>
+    <string name="product_title_sample">Product Title</string>
 </resources>
