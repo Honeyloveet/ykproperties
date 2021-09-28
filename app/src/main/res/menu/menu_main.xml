@@ -18,7 +18,12 @@
         android:id="@+id/miFavorites"
         android:icon="@drawable/ic_favorite"
         android:title="Favorites" />
-    favorite
+
+    <item
+        android:id="@+id/miAddPost"
+        android:icon="@drawable/ic_add_post"
+        android:title="Add Post" />
+
     <item
         android:id="@+id/miSettings"
         android:icon="@drawable/ic_settings"
@@ -42,6 +47,11 @@
         android:title="Communicate">
 
         <menu>
+
+            <item
+                android:id="@+id/miContact"
+                android:icon="@drawable/ic_contact_us"
+                android:title="Contact us" />
 
             <item
                 android:id="@+id/miShare"

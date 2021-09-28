@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/miAddFavoritesDetails"
+        android:icon="@drawable/ic_favorite_not_added"
+        android:title="Share"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/miShareDetails"
         android:icon="@drawable/ic_share"
         android:title="Share"
