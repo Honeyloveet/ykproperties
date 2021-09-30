@@ -9,12 +9,6 @@
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/miShareDetails"
-        android:icon="@drawable/ic_share"
-        android:title="Share"
-        app:showAsAction="always"/>
-
-    <item
         android:id="@+id/miReportDetails"
         android:icon="@drawable/ic_report"
         android:title="Report"

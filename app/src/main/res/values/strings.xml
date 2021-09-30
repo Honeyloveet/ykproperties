@@ -10,4 +10,25 @@
     <string name="product_images">Product Images</string>
     <string name="id">ID</string>
     <string name="product_title_sample">Product Title</string>
+    <string name="text_error">Error</string>
+    <string name="text_success">Success</string>
+    <string name="text_ok">OK</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="text_yes">yes</string>
+    <string name="ascending_or_descending_order">Ascending or descending order</string>
+    <string name="text_filter_options">Filter Options</string>
+    <string name="filter_by_category">Categories</string>
+    <string name="text_author">Author</string>
+    <string name="text_date">Date</string>
+    <string name="text_filter">Filter</string>
+    <string name="category_all">All</string>
+    <string name="category_car">Cars</string>
+    <string name="category_house">House</string>
+    <string name="category_land">Land</string>
+    <string name="category_other">Other</string>
+    <string name="key_filter">filter</string>
+    <string name="key_order">order</string>
+    <string name="order_asc">ASC</string>
+    <string name="order_desc">DESC</string>
 </resources>

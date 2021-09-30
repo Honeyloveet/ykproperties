@@ -8,25 +8,30 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 
-class ProductDetails : AppCompatActivity() {
+class CarDetails : AppCompatActivity() {
 
     lateinit var toolbar: Toolbar
     lateinit var ivProductDetail: ImageView
     lateinit var tvProductDetailsID: TextView
     lateinit var tvTitleProductDetails: TextView
     lateinit var tvPriceProductDetails: TextView
+    lateinit var tvDescription: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_product_details)
+        setContentView(R.layout.activity_car_details)
 
         toolbar = findViewById(R.id.toolBarDetails)
+//        setSupportActionBar(toolbar)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
         ivProductDetail = findViewById(R.id.ivProductDetail)
         tvProductDetailsID = findViewById(R.id.tvProductDetailsID)
         tvTitleProductDetails = findViewById(R.id.tvTitleProductDetails)
         tvPriceProductDetails = findViewById(R.id.tvPriceProductDetails)
+        tvDescription = findViewById(R.id.tvDescription)
 
         val bundle : Bundle? = intent.extras
         val id = bundle!!.getInt("id")
@@ -34,17 +39,28 @@ class ProductDetails : AppCompatActivity() {
         val price = bundle.getString("price")
         val imgUrl = bundle.getString("imgUrl")
         val category = bundle.getString("category")
+        val description = bundle.getString("description")
 
         val detail = "$id $title $price"
 
         tvProductDetailsID.text = detail
         tvTitleProductDetails.text = title
         tvPriceProductDetails.text = price
+        tvDescription.text = description
         Glide.with(this).load(imgUrl).into(ivProductDetail)
 
-        toolbar.title = category
+//        toolbar.title = category
         setSupportActionBar(toolbar)
-
+        supportActionBar?.apply {
+            setTitle(category)
+            // show back button on toolbar
+            // on back button press, it will navigate to parent activity
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+        }
+        toolbar.setNavigationOnClickListener {
+            finish();
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
