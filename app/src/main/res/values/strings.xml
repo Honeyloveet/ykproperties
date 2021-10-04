@@ -31,4 +31,5 @@
     <string name="key_order">order</string>
     <string name="order_asc">ASC</string>
     <string name="order_desc">DESC</string>
+    <string name="sign_in_to_ykproperties">Sign in to YKProperties</string>
 </resources>

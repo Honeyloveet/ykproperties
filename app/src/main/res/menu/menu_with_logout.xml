@@ -10,11 +10,6 @@
         android:title="Home" />
 
     <item
-        android:id="@+id/miMessage"
-        android:icon="@drawable/ic_message"
-        android:title="Messages" />
-
-    <item
         android:id="@+id/miFavorites"
         android:icon="@drawable/ic_favorite"
         android:title="Favorites" />
@@ -23,6 +18,11 @@
         android:id="@+id/miAddPost"
         android:icon="@drawable/ic_add_post"
         android:title="Add Post" />
+
+    <item
+        android:id="@+id/miYourPost"
+        android:icon="@drawable/ic_your_posts"
+        android:title="Your Posts" />
 
     <item
         android:id="@+id/miSettings"
@@ -37,6 +37,7 @@
             <item
                 android:id="@+id/miLogout"
                 android:icon="@drawable/ic_logout"
+                android:visible="true"
                 android:title="Logout" />
 
         </menu>
@@ -65,4 +66,5 @@
         </menu>
 
     </item>
+
 </menu>
