@@ -574,7 +574,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.miLogout -> {
                 showLogoutDialog()
                 drawerLayout.closeDrawer(GravityCompat.START)
-                isLoggedIn = false
+//                isLoggedIn = false
                 return true
             }
             R.id.miLogin -> {
@@ -588,6 +588,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (!isLoggedIn) {
                     showLoginDialog()
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    return true
+                } else {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this@MainActivity, AddPost::class.java)
+                    startActivity(intent)
                     return true
                 }
             }

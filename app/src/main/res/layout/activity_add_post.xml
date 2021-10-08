@@ -1,0 +1,851 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddPost">
+
+    <include
+        android:id="@+id/toolBarDetails"
+        layout="@layout/toolbar_add_post"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolBarDetails">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingBottom="10dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCategories"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Category*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:placeholderText="Category*"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvCategories"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="none"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Add Photo"
+                        android:textColor="@color/gray_text"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCategories" />
+
+                    <ImageView
+                        android:id="@+id/ivPhoto1"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginStart="28dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView2"
+                        app:srcCompat="@drawable/ic_add_post" />
+
+                    <ImageView
+                        android:id="@+id/ivPhoto2"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toEndOf="@+id/ivPhoto1"
+                        app:layout_constraintTop_toBottomOf="@+id/textView2"
+                        app:srcCompat="@drawable/ic_add_post" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvCar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutMake"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Make*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:placeholderText="Make*"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvMake"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutModel"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Model*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutMake"
+                        app:placeholderText="Model*"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvModel"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:inputType="text"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutYear"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Year of manufacturer*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutModel"
+                        app:placeholderText="2021"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvYear"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:inputType="number"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutColor"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Color*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutYear"
+                        app:placeholderText="Gray"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvColor"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:inputType="text"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCondition"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Condition*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutColor"
+                        app:placeholderText="Brand New"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvCondition"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="none"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutTransmission"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Transmission*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCondition"
+                        app:placeholderText="Automatic"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvTransmission"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="none"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutMileage"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Mileage (km)"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTransmission"
+                        app:placeholderText="28000"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvMileage"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text"
+                            android:textColorHint="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutFuel"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Fuel*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutMileage"
+                        app:placeholderText="Gasoline"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvFuel"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="none"
+                            android:textColor="@color/gray_text"
+                            android:textColorHint="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutPlate"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Plate No"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutFuel"
+                        app:placeholderText="2-A70xxx"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvPlate"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text"
+                            android:textColorHint="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutEngineSize"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Engine Size (CC)"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPlate"
+                        app:placeholderText="1300 CC"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvEngineSize"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text"
+                            android:textColorHint="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvHouse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutHouseType"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="House Type*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvHouseType"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:paddingStart="14dp"
+                            android:textColor="@color/gray_text"
+                            android:textSize="16sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutHouseLocation"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Location*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutHouseSize"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvHouseLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutHouseSize"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="House Size(Meter Square)*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutHouseType"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvHouseSize"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvLand"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutLandLocation"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Location*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvLandLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutLandSize"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Land Size(Meter Square)*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutLandLocation"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvLandSize"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutOtherTitle"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Item Type*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvOtherTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:paddingStart="14dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/gray_text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvCommon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCommonOwnerOr"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Owner/Broker*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvCommonOwnerOr"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="none"
+                            android:paddingStart="14dp"
+                            android:textColor="@color/gray_text"
+                            android:textSize="16sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCommonSaleOr"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="For Sale/Rent/Exchange*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCommonOwnerOr"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvCommonSaleOr"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="none"
+                            android:paddingStart="14dp"
+                            android:textColor="@color/gray_text"
+                            android:textSize="16sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCommonPrice"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Price Birr*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCommonSaleOr"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvCommonPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:paddingStart="14dp"
+                            android:textColor="@color/gray_text"
+                            android:textSize="16sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCommonDesc"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Description*"
+                        android:textColorHint="@color/hint_text"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="1000"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCommonPrice"
+                        app:startIconTint="@color/orange_main">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCommonDesc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:inputType="textMultiLine"
+                            android:paddingStart="14dp"
+                            android:singleLine="false"
+                            android:textColor="@color/gray_text"
+                            android:textSize="16sp"
+                            tools:ignore="SpeakableTextPresentCheck" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCommonPhone"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="1dp"
+                        android:hint="Phone Number*"
+                        android:textColorHint="@color/hint_text"
+                        app:boxStrokeColor="@color/orange_main"
+                        app:endIconTint="@color/orange_main"
+                        app:hintTextColor="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCommonDesc"
+                        app:startIconTint="@color/orange_main">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoComTvCommonPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:paddingStart="14dp"
+                            android:textColor="@color/gray_text"
+                            android:textSize="16sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btnAddPost"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/orange_main"
+                        android:text="POST"
+                        android:textAlignment="center"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        app:iconTint="@color/orange_main"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCommonPhone" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

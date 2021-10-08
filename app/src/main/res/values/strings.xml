@@ -32,4 +32,109 @@
     <string name="order_asc">ASC</string>
     <string name="order_desc">DESC</string>
     <string name="sign_in_to_ykproperties">Sign in to YKProperties</string>
+
+    <string-array name="categories">
+        <item>House</item>
+        <item>Cars</item>
+        <item>Land</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="sale_rent_exchange">
+        <item>For Sale</item>
+        <item>For Rent</item>
+        <item>For Sale/Exchange</item>
+    </string-array>
+
+    <string-array name="car_condition">
+        <item>Brand New</item>
+        <item>Used in Ethiopia</item>
+        <item>Used New</item>
+    </string-array>
+
+    <string-array name="transmission">
+        <item>Automatic</item>
+        <item>Manual</item>
+    </string-array>
+
+    <string-array name="fuel">
+        <item>Gasoline</item>
+        <item>Diesel</item>
+    </string-array>
+
+    <string-array name="seller">
+        <item>Owner</item>
+        <item>Broker</item>
+    </string-array>
+
+    <string-array name="make">
+        <item>Abarth</item>
+        <item>Abay</item>
+        <item>Alfa Romeo</item>
+        <item>Aston Martin</item>
+        <item>Audi</item>
+        <item>Bentley</item>
+        <item>BMW</item>
+        <item>Bugatti</item>
+        <item>Cadillac</item>
+        <item>Chevrolet</item>
+        <item>Chrysler</item>
+        <item>Citroën</item>
+        <item>Dacia</item>
+        <item>Daewoo</item>
+        <item>Daihatsu</item>
+        <item>Dodge</item>
+        <item>Donkervoort</item>
+        <item>DS</item>
+        <item>Ferrari</item>
+        <item>Fiat</item>
+        <item>Fisker</item>
+        <item>Ford</item>
+        <item>Honda</item>
+        <item>Hummer</item>
+        <item>Hyundai</item>
+        <item>Infiniti</item>
+        <item>Iveco</item>
+        <item>Jaguar</item>
+        <item>Jeep</item>
+        <item>Kia</item>
+        <item>KTM</item>
+        <item>Lada</item>
+        <item>Lamborghini</item>
+        <item>Lancia</item>
+        <item>Land Rover</item>
+        <item>Landwind</item>
+        <item>Lexus</item>
+        <item>Lifan</item>
+        <item>Lotus</item>
+        <item>Maserati</item>
+        <item>Maybach</item>
+        <item>Mazda</item>
+        <item>McLaren</item>
+        <item>Mercedes-Benz</item>
+        <item>MG</item>
+        <item>Mini</item>
+        <item>Mitsubishi</item>
+        <item>Morgan</item>
+        <item>Nissan</item>
+        <item>Opel</item>
+        <item>Peugeot</item>
+        <item>Porsche</item>
+        <item>Renault</item>
+        <item>Rolls-Royce</item>
+        <item>Rover</item>
+        <item>Saab</item>
+        <item>Seat</item>
+        <item>Skoda</item>
+        <item>Smart</item>
+        <item>SsangYong</item>
+        <item>Subaru</item>
+        <item>Suzuki</item>
+        <item>Tesla</item>
+        <item>Toyota</item>
+        <item>Volkswagen</item>
+        <item>Volvo</item>
+    </string-array>
+
+
 </resources>
