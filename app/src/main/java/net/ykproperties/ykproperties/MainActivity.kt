@@ -2,7 +2,6 @@
 
 package net.ykproperties.ykproperties
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +27,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -38,11 +36,9 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import net.ykproperties.ykproperties.Model.ProductModelClass
 import net.ykproperties.ykproperties.util.ConnectionLiveData
-import net.ykproperties.ykproperties.util.NetworkConnectionLive
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -52,7 +48,7 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    lateinit var networkConnectionStatus: ConnectionLiveData
+    private lateinit var networkConnectionStatus: ConnectionLiveData
 
     private lateinit var googleSignInClient: GoogleSignInClient
 
@@ -73,24 +69,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var preferences: SharedPreferences
     lateinit var editor: SharedPreferences.Editor
 
-    lateinit var toolbar: Toolbar
-    lateinit var rvItems: RecyclerView
-    lateinit var toggle: ActionBarDrawerToggle
-    lateinit var drawerLayout: DrawerLayout
-    lateinit var navView: NavigationView
-    lateinit var svSearchProducts: SearchView
+    private lateinit var toolbar: Toolbar
+    private lateinit var rvItems: RecyclerView
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+    private lateinit var svSearchProducts: SearchView
 
-    lateinit var btnCatHouse: ImageButton
-    lateinit var btnCatLand: ImageButton
-    lateinit var btnCatAll: ImageButton
-    lateinit var btnCatOther: ImageButton
-    lateinit var btnCatCars: ImageButton
+    private lateinit var btnCatHouse: ImageButton
+    private lateinit var btnCatLand: ImageButton
+    private lateinit var btnCatAll: ImageButton
+    private lateinit var btnCatOther: ImageButton
+    private lateinit var btnCatCars: ImageButton
 
-    var selectedFilter = 1
-    var isLoggedIn: Boolean = false
+    private var selectedFilter = 1
+    private var isLoggedIn: Boolean = false
 
-    val productsList: ArrayList<ProductModelClass> = ArrayList()
-    val itemAdapter = ProductAdapter(this, productsList)
+    private val productsList: ArrayList<ProductModelClass> = ArrayList()
+    private val itemAdapter = ProductAdapter(this, productsList)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -260,7 +256,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun checkInternetConnectionStatus() {
-        networkConnectionStatus.observe(this, androidx.lifecycle.Observer { isConnected ->
+        networkConnectionStatus.observe(this, { isConnected ->
 
             if (!isConnected) {
                 val snackBar = Snackbar.make(
@@ -295,11 +291,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         googleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
+    @Suppress("DEPRECATION")
     private fun googleSignIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -642,7 +640,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     private fun getJSONFromAssets(): String? {
 
-        var jsonn: String? = null
+        var jsonN: String? = null
         val charset: Charset = Charsets.UTF_8
         try {
             val myUsersJSONFile = assets.open("products.json")
@@ -650,12 +648,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val buffer = ByteArray(size)
             myUsersJSONFile.read(buffer)
             myUsersJSONFile.close()
-            jsonn = String(buffer, charset)
+            jsonN = String(buffer, charset)
         } catch (ex: IOException) {
             ex.printStackTrace()
             return null
         }
-        return jsonn
+        return jsonN
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

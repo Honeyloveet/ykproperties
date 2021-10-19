@@ -52,9 +52,9 @@ private const val TAG = "HONEY"
 class AddPost : AppCompatActivity() {
 
 //    private val easyPermissionManager = EasyPermissionManager(this)
-    lateinit var networkConnectionStatus: ConnectionLiveData
+    private lateinit var networkConnectionStatus: ConnectionLiveData
 
-    private var photoUriOne: Uri? = null
+//    private var photoUriOne: Uri? = null
 
     private lateinit var auth: FirebaseAuth
 
@@ -103,10 +103,10 @@ class AddPost : AppCompatActivity() {
     private lateinit var etCommonPrice: TextInputEditText
     private lateinit var etCommonDesc: TextInputEditText
 
-    lateinit var photosSelectedList: List<InternalStoragePhoto>
-    lateinit var photosSelected: MutableList<InternalStoragePhoto>
-    lateinit var selectedImageOne: InternalStoragePhoto
-    lateinit var selectedImageTwo: InternalStoragePhoto
+//    lateinit var photosSelectedList: List<InternalStoragePhoto>
+//    lateinit var photosSelected: MutableList<InternalStoragePhoto>
+//    lateinit var selectedImageOne: InternalStoragePhoto
+//    lateinit var selectedImageTwo: InternalStoragePhoto
 
     private lateinit var imageOneBmp: Bitmap
     private lateinit var imageTwoBmp: Bitmap
@@ -185,9 +185,10 @@ class AddPost : AppCompatActivity() {
             }
         }
     }
-
+    @Suppress("unused")
     private var tempImageUri: Uri? = null
 
+    @Suppress("unused")
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
             ivPhoto1.setImageURI(tempImageUri)
@@ -542,7 +543,7 @@ class AddPost : AppCompatActivity() {
     }
 
     private fun checkInternetConnectionStatus() {
-        networkConnectionStatus.observe(this, androidx.lifecycle.Observer { isConnected ->
+        networkConnectionStatus.observe(this, { isConnected ->
 
             if (!isConnected) {
                 val snackBar = Snackbar.make(
@@ -573,24 +574,50 @@ class AddPost : AppCompatActivity() {
 
     }
 
-    private fun productUploadSuccessOrFailedDialog() {
-        val dialog = MaterialDialog(this)
-            .noAutoDismiss()
-            .cancelable(false)
-            .cornerRadius(14f)
-            .customView(R.layout.upload_success_or_failed_dialog)
-        dialog.findViewById<Button>(R.id.btnUploadStatusYes).setOnClickListener {
-            clearImageSelection()
-            clearInputFields()
-            changeCategoryVisibility()
-            dialog.dismiss()
+    private fun productUploadSuccessOrFailedDialog(uploadSuccess: Boolean) {
+        if (uploadSuccess) {
+            val dialog = MaterialDialog(this)
+                .noAutoDismiss()
+                .cancelable(false)
+                .cornerRadius(14f)
+                .customView(R.layout.upload_success_or_failed_dialog)
+            dialog.findViewById<TextView>(R.id.tvUploadStatusTitle).text = "Item Post Success."
+            dialog.findViewById<TextView>(R.id.tvUploadStatusTitle).setTextColor(getColor(R.color.orange_main))
+            dialog.findViewById<TextView>(R.id.tvUploadStatusQuestion).text = "Do you want to post another Item?"
+            dialog.findViewById<Button>(R.id.btnUploadStatusYes).setOnClickListener {
+                clearImageSelection()
+                clearInputFields()
+                changeCategoryVisibility()
+                dialog.dismiss()
+            }
+            dialog.findViewById<Button>(R.id.btnUploadStatusNo).setOnClickListener {
+                deleteImagesFile()
+                finish()
+                dialog.dismiss()
+            }
+            dialog.show()
+        } else {
+            val dialog = MaterialDialog(this)
+                .noAutoDismiss()
+                .cancelable(false)
+                .cornerRadius(14f)
+                .customView(R.layout.upload_success_or_failed_dialog)
+            dialog.findViewById<TextView>(R.id.tvUploadStatusTitle).text = "Item Post Failed!!!"
+            dialog.findViewById<TextView>(R.id.tvUploadStatusTitle).setTextColor(getColor(R.color.red))
+            dialog.findViewById<TextView>(R.id.tvUploadStatusQuestion).text = "Do you want to try again?"
+            dialog.findViewById<Button>(R.id.btnUploadStatusYes).setOnClickListener {
+                clearImageSelection()
+                clearInputFields()
+                changeCategoryVisibility()
+                dialog.dismiss()
+            }
+            dialog.findViewById<Button>(R.id.btnUploadStatusNo).setOnClickListener {
+                deleteImagesFile()
+                finish()
+                dialog.dismiss()
+            }
+            dialog.show()
         }
-        dialog.findViewById<Button>(R.id.btnUploadStatusNo).setOnClickListener {
-            deleteImagesFile()
-            finish()
-            dialog.dismiss()
-        }
-        dialog.show()
     }
 
     private fun uploadImages() {
@@ -622,9 +649,6 @@ class AddPost : AppCompatActivity() {
 
         when (selectedCategory) {
             "Other" -> {
-    //            val price = etCommonPrice.text.toString().filter { char ->
-    //                char.isDigit()
-    //            }.toLong()
                 val itemToPost = ProductsModel(
                     uid,
                     autoComTvOtherTitle.text.toString(),
@@ -656,21 +680,18 @@ class AddPost : AppCompatActivity() {
                     currentUser!!.uid,
                     0,
                     0)
-    //            val s = etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong()
-    //            Toast.makeText(this, "Price = $s Birr", Toast.LENGTH_SHORT).show()
                 db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
                     .addOnSuccessListener {
                         btnAddPost.isEnabled = true
                         clearImageSelection()
                         progressDialog.dismiss()
-                        productUploadSuccessOrFailedDialog()
-                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(true)
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error writing document", e)
                         btnAddPost.isEnabled = true
                         progressDialog.dismiss()
-                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(false)
                     }
             }
             "Land" -> {
@@ -710,14 +731,13 @@ class AddPost : AppCompatActivity() {
                         btnAddPost.isEnabled = true
                         clearImageSelection()
                         progressDialog.dismiss()
-                        productUploadSuccessOrFailedDialog()
-                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(true)
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error writing document", e)
                         btnAddPost.isEnabled = true
                         progressDialog.dismiss()
-                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(false)
                     }
             }
             "House" -> {
@@ -757,14 +777,13 @@ class AddPost : AppCompatActivity() {
                         btnAddPost.isEnabled = true
                         clearImageSelection()
                         progressDialog.dismiss()
-                        productUploadSuccessOrFailedDialog()
-                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(true)
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error writing document", e)
                         btnAddPost.isEnabled = true
                         progressDialog.dismiss()
-                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(false)
                     }
             }
             "Cars" -> {
@@ -804,14 +823,13 @@ class AddPost : AppCompatActivity() {
                         btnAddPost.isEnabled = true
                         clearImageSelection()
                         progressDialog.dismiss()
-                        productUploadSuccessOrFailedDialog()
-                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(true)
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error writing document", e)
                         btnAddPost.isEnabled = true
                         progressDialog.dismiss()
-                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                        productUploadSuccessOrFailedDialog(false)
                     }
             }
         }
@@ -928,37 +946,45 @@ class AddPost : AppCompatActivity() {
 //                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
 //                    return false
 //                } else
-                if (autoComTvLandLocation.text.isBlank()) {
-                    Toast.makeText(this, "Please input the Location of the Land!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvLandSize.text.isBlank()) {
-                    Toast.makeText(this, "Please input Land Size in Meter Square!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if you are Owner or Broker of the Land!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonSaleOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if the Land is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonPrice.text!!.isBlank()) {
-                    Toast.makeText(this, "Please input the price of the Land in Birr!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonDesc.text!!.isBlank()) {
-                    Toast.makeText(this, "Please input Description of the Land!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonPhone.text.isBlank()) {
-                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else {
-                    return true
+                when {
+                    autoComTvLandLocation.text.isBlank() -> {
+                        Toast.makeText(this, "Please input the Location of the Land!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvLandSize.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Land Size in Meter Square!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonOwnerOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if you are Owner or Broker of the Land!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonSaleOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if the Land is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonPrice.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input the price of the Land in Birr!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonDesc.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input Description of the Land!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonPhone.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    else -> {
+                        return true
+                    }
                 }
             }
             "Other" -> {
-//                if (!pictureOneSelected && !pictureTwoSelected) {
-//                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
-//                    return false
-//                } else
-                if (autoComTvOtherTitle.text.isBlank()) {
+                if (!pictureOneSelected && !pictureTwoSelected) {
+                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvOtherTitle.text.isBlank()) {
                     Toast.makeText(this, "Please input the Item type!", Toast.LENGTH_SHORT).show()
                     return false
                 } else if (autoComTvCommonOwnerOr.text.isBlank()) {
@@ -1001,10 +1027,10 @@ class AddPost : AppCompatActivity() {
             for (imageDir in imageDirs) {
                 if (imageDir.name == "Pictures") {
                     val files = imageDir.listFiles()
-                    for (file in files) {
+                    files?.forEach { file ->
                         try {
                             file.delete()
-//                            Toast.makeText(this,"Deleted ${file.name}",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this,"Deleted ${file.name}",Toast.LENGTH_SHORT).show()
                         } catch (e: Exception) {
                             e.printStackTrace()
                             Log.v(TAG, "Failed to delete:" + e.printStackTrace())
@@ -1015,6 +1041,7 @@ class AddPost : AppCompatActivity() {
         }
     }
 
+    @Suppress("unused")
     private fun deletePhotosFromInternalStorage(name: String? = null) {
         lifecycleScope.launch {
             val photos = loadPhotosFromInternalStorage()
@@ -1068,6 +1095,7 @@ class AddPost : AppCompatActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun savePhotoToInternalStorage(filename: String, imageFileSelected: File?, selectedImage: Int): Boolean {
 
         try {
