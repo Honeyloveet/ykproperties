@@ -1,5 +1,6 @@
 package net.ykproperties.ykproperties
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +14,13 @@ import com.bumptech.glide.Glide
 class ProductAdapter (val context: Context, val items: ArrayList<ProductModelClass>) :
     RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
-    private lateinit var mListener : onItemClickListener
+    private lateinit var mListener : OnItemClickListener
 
-    interface onItemClickListener{
+    interface OnItemClickListener{
         fun onItemClick(position: Int)
     }
 
-    fun setOnItemClickListener(listener: onItemClickListener) {
+    fun setOnItemClickListener(listener: OnItemClickListener) {
         mListener = listener
     }
 
@@ -49,9 +50,10 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
      * of the given type. You can either create a new View manually or inflate it from an XML
      * layout file.
      */
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val item = items.get(position)
+        val item = items[position]
 
         holder.tvProductIdGridV.text = item.title
         holder.tvTitleGridV.text = item.title
@@ -74,16 +76,16 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
     /**
      * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
      */
-    class ViewHolder(view: View, listener: onItemClickListener) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View, listener: OnItemClickListener) : RecyclerView.ViewHolder(view) {
         // Holds the TextView that will add each item to
-        val tvTitleGridV = view.findViewById<TextView>(R.id.tvTitleGridV)
-        val tvPriceGridV = view.findViewById<TextView>(R.id.tvPriceGridV)
-        val ivItemsGridV = view.findViewById<ImageView>(R.id.ivItemsGridV)
-        val tvProductIdGridV = view.findViewById<TextView>(R.id.tvProductIdGridV)
+        val tvTitleGridV:TextView = view.findViewById<TextView>(R.id.tvTitleGridV)
+        val tvPriceGridV :TextView = view.findViewById<TextView>(R.id.tvPriceGridV)
+        val ivItemsGridV: ImageView = view.findViewById<ImageView>(R.id.ivItemsGridV)
+        val tvProductIdGridV: TextView = view.findViewById<TextView>(R.id.tvProductIdGridV)
 
         init {
             view.setOnClickListener {
-                listener.onItemClick(adapterPosition)
+                listener.onItemClick(absoluteAdapterPosition)
             }
         }
 

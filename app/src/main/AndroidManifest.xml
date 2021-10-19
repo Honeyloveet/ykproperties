@@ -11,6 +11,7 @@
         tools:ignore="ScopedStorage"/>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -29,7 +30,9 @@
         android:theme="@style/Theme.YKProperties">
         <activity
             android:name=".AddPost"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".OtherDetails"
             android:exported="true"

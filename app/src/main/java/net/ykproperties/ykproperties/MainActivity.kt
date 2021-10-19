@@ -1,5 +1,8 @@
+//@file:Suppress("UNRESOLVED")
+
 package net.ykproperties.ykproperties
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +13,7 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SearchView
+import android.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -24,22 +27,43 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import net.ykproperties.ykproperties.Model.ProductModelClass
+import net.ykproperties.ykproperties.util.ConnectionLiveData
+import net.ykproperties.ykproperties.util.NetworkConnectionLive
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.nio.charset.Charset
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    lateinit var networkConnectionStatus: ConnectionLiveData
 
     private lateinit var googleSignInClient: GoogleSignInClient
 
     private lateinit var auth: FirebaseAuth
+
+    private val db = Firebase.firestore
+
+    // Create a storage reference from our app
+    private lateinit var storage: FirebaseStorage
+
+//    var storageE = Firebase.storage
 
     private companion object{
         private const val RC_GOOGLE_SIGN_IN = 2088
@@ -68,13 +92,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val productsList: ArrayList<ProductModelClass> = ArrayList()
     val itemAdapter = ProductAdapter(this, productsList)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_main)
 
+        networkConnectionStatus = ConnectionLiveData(applicationContext)
+        checkInternetConnectionStatus()
+
         auth = Firebase.auth
+
+        storage = Firebase.storage
+
+        var storageRef = storage.reference
 
         btnCatHouse = findViewById(R.id.btnCatHouse)
         btnCatLand = findViewById(R.id.btnCatLand)
@@ -87,7 +117,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        toolbar.navigationIcon = null
         setSupportActionBar(toolbar)
 
-//        svSearchProducts = findViewById(R.id.svSearchProducts)
+        svSearchProducts = findViewById(R.id.svSearchProducts)
 
         drawerLayout = findViewById(R.id.drawerLayout)
         navView = findViewById(R.id.navView)
@@ -104,14 +134,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
         // Instance of users list using the data model class.
 //        changeLoginLogoutMenu()
-
         createGoogleRequest()
 
         getProductsList("All")
 
 //        productsList
 
-        itemAdapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener{
+        itemAdapter.setOnItemClickListener(object : ProductAdapter.OnItemClickListener{
             override fun onItemClick(position: Int) {
 //                Toast.makeText(this@MainActivity,"You Clicked on item no. $position",Toast.LENGTH_SHORT).show()
 
@@ -230,6 +259,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    private fun checkInternetConnectionStatus() {
+        networkConnectionStatus.observe(this, androidx.lifecycle.Observer { isConnected ->
+
+            if (!isConnected) {
+                val snackBar = Snackbar.make(
+                    drawerLayout,
+                    "No Internet Connection!",
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                snackBar.setAction("Retry"){
+                    snackBar.dismiss()
+                    checkInternetConnectionStatus()
+                }.show()
+            }
+
+        })
+    }
+
     override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -237,6 +284,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         updateUI(currentUser)
     }
 
+//    @SuppressLint("UnresolvedReference")
     private fun createGoogleRequest(){
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -294,11 +342,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             isLoggedIn = false
             changeLoginLogoutMenu()
             return
-        } else {
-            Log.w(TAG, "User is $user")
-            isLoggedIn = true
-            changeLoginLogoutMenu()
-        }
+          }
+
+        val currentUser = auth.currentUser
+        val docRef = db.collection("users").document(currentUser!!.uid)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    Log.d("SAMUEL", "DocumentSnapshot data: ${document.data}")
+                    if (document.data == null) {
+                        val userToAdd = hashMapOf(
+                            "name" to currentUser.displayName,
+                            "email" to currentUser.email,
+                            "phone" to 0,
+                            "facebook" to "",
+                            "registered" to FieldValue.serverTimestamp(),
+                            "role" to "guest",
+                            "status" to "active",
+                            "favorites" to arrayListOf(""),
+                        )
+                        db.collection("users").document(currentUser.uid)
+                            .set(userToAdd, SetOptions.merge())
+                            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+                    }
+                    isLoggedIn = true
+                    changeLoginLogoutMenu()
+                } else {
+                    Log.d(TAG, "No such document")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "get failed with ", exception)
+            }
     }
 
     private fun getProductsList(categoryType: String){
@@ -498,12 +574,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (svSearchProducts.query.isEmpty()) {
+            svSearchProducts.clearFocus()
+        }
+    }
+
     override fun onBackPressed() {
 //        Toast.makeText(this,"Hello", Toast.LENGTH_SHORT).show()
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawer(GravityCompat.START)
+            if (svSearchProducts.query.isEmpty()) {
+                svSearchProducts.clearFocus()
+            }
         } else {
             super.onBackPressed()
+            if (svSearchProducts.query.isEmpty()) {
+                svSearchProducts.clearFocus()
+            }
         }
     }
 

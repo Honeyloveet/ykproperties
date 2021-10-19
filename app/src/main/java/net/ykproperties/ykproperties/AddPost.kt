@@ -1,8 +1,6 @@
 package net.ykproperties.ykproperties
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
+import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -10,71 +8,130 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.ImageView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
-import androidx.core.net.toFile
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
+import com.cottacush.android.currencyedittext.CurrencyInputWatcher
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.default
 import id.zelory.compressor.constraint.destination
+import id.zelory.compressor.loadBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.ykproperties.ykproperties.Model.ProductsModel
+import net.ykproperties.ykproperties.util.ConnectionLiveData
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
 import java.util.*
-import kotlin.math.roundToInt
+import kotlin.Exception
+import kotlin.collections.ArrayList
 
-private const val PICK_PHOTO_CODE = 6410
-private const val TAG = "samuel"
+//private const val PICK_PHOTO_CODE = 6410
+private const val TAG = "HONEY"
 
 class AddPost : AppCompatActivity() {
 
 //    private val easyPermissionManager = EasyPermissionManager(this)
+    lateinit var networkConnectionStatus: ConnectionLiveData
 
     private var photoUriOne: Uri? = null
 
-    lateinit var toolbar: Toolbar
-    lateinit var autoComTvCategories: AutoCompleteTextView
-    lateinit var autoComTvMake: AutoCompleteTextView
-    lateinit var autoComTvCondition: AutoCompleteTextView
-    lateinit var autoComTvTransmission: AutoCompleteTextView
-    lateinit var autoComTvFuel: AutoCompleteTextView
-    lateinit var autoComTvCommonOwnerOr: AutoCompleteTextView
-    lateinit var autoComTvCommonSaleOr: AutoCompleteTextView
-    lateinit var cvCar: CardView
-    lateinit var cvHouse: CardView
-    lateinit var cvLand: CardView
-    lateinit var cvOther: CardView
-    lateinit var cvCommon: CardView
+    private lateinit var auth: FirebaseAuth
+
+    private val db = Firebase.firestore
+
+    private lateinit var progressDialog: AlertDialog
+
+    // Create a storage reference from our app
+    private lateinit var storage: FirebaseStorage
+    private lateinit var storageRef: StorageReference
+
+    private lateinit var addPostLayout: ConstraintLayout
+
+    private lateinit var toolbar: Toolbar
+    private lateinit var autoComTvCategories: AutoCompleteTextView
+    private lateinit var autoComTvMake: AutoCompleteTextView
+    private lateinit var autoComTvCondition: AutoCompleteTextView
+    private lateinit var autoComTvTransmission: AutoCompleteTextView
+    private lateinit var autoComTvFuel: AutoCompleteTextView
+    private lateinit var autoComTvCommonOwnerOr: AutoCompleteTextView
+    private lateinit var autoComTvCommonSaleOr: AutoCompleteTextView
+    private lateinit var autoComTvHouseType: AutoCompleteTextView
+    private lateinit var autoComTvHouseSize: AutoCompleteTextView
+    private lateinit var autoComTvHouseLocation: AutoCompleteTextView
+    private lateinit var autoComTvCommonPhone: AutoCompleteTextView
+    private lateinit var autoComTvLandLocation: AutoCompleteTextView
+    private lateinit var autoComTvLandSize: AutoCompleteTextView
+    private lateinit var autoComTvOtherTitle: AutoCompleteTextView
+    private lateinit var autoComTvModel: AutoCompleteTextView
+    private lateinit var autoComTvYear: AutoCompleteTextView
+    private lateinit var autoComTvColor: AutoCompleteTextView
+    private lateinit var autoComTvMileage: AutoCompleteTextView
+    private lateinit var autoComTvPlate: AutoCompleteTextView
+    private lateinit var autoComTvEngineSize: AutoCompleteTextView
+
+    private lateinit var textInputLayoutCommonDesc: TextInputLayout
+
+    private lateinit var cvCar: CardView
+    private lateinit var cvHouse: CardView
+    private lateinit var cvLand: CardView
+    private lateinit var cvOther: CardView
+    private lateinit var cvCommon: CardView
+
+    private lateinit var tvAddPhoto: TextView
+
+    private lateinit var etCommonPrice: TextInputEditText
+    private lateinit var etCommonDesc: TextInputEditText
 
     lateinit var photosSelectedList: List<InternalStoragePhoto>
     lateinit var photosSelected: MutableList<InternalStoragePhoto>
     lateinit var selectedImageOne: InternalStoragePhoto
     lateinit var selectedImageTwo: InternalStoragePhoto
 
-    lateinit var imageOneBmp: Bitmap
-    lateinit var imageTwoBmp: Bitmap
-    lateinit var imageFileOne: File
-    lateinit var imageFileTwo: File
-    lateinit var imageFileOneToUpload: File
-    lateinit var imageFileTwoToUpload: File
-    lateinit var imageOneBmpToUpload: Bitmap
-    lateinit var imageTwoBmpToUpload: Bitmap
-    lateinit var imageOneUriToUpload: Uri
-    lateinit var imageTwoUriToUpload: Uri
+    private lateinit var imageOneBmp: Bitmap
+    private lateinit var imageTwoBmp: Bitmap
 
-    lateinit var uuidImageOneName: String
-    lateinit var uuidImageTwoName: String
+    private var actualImageFileOne: File? = null
+    private var actualImageFileTwo: File? = null
+    private var compressedImageOne: File? = null
+    private var compressedImageTwo: File? = null
+
+    private var imageFileOneToUpload: File? = null
+    private var imageFileTwoToUpload: File? = null
+
+    private lateinit var imageOneUriToUpload: Uri
+    private lateinit var imageTwoUriToUpload: Uri
+
+    private var imagesUriToUpload = ArrayList<Uri>()
+    private var imagesUriString = ArrayList<String>()
+
+    private lateinit var uuidImageOneName: String
+    private lateinit var uuidImageTwoName: String
+
+    private lateinit var btnAddPost: Button
+
+    private var pictureOneSelected: Boolean = false
+    private var pictureTwoSelected: Boolean = false
 
     private val ivPhoto1: ImageView by lazy {
         findViewById(R.id.ivPhoto1)
@@ -85,69 +142,46 @@ class AddPost : AppCompatActivity() {
 
     private val selectPictureLauncherOne = registerForActivityResult(ActivityResultContracts.GetContent()){ uri ->
         if (uri != null) {
-            contentResolver.openInputStream(uri).let {
-                imageOneBmp = BitmapFactory.decodeStream(it)
-                imageFileOne = File(uri.path)
+            actualImageFileOne = FileUtil.from(this, uri)?.also {
+                imageOneBmp = loadBitmap(it)
                 uuidImageOneName = UUID.randomUUID().toString()
             }
-//            openFileInput(imageFileOne.name).use {
-//                imageOneBmp = BitmapFactory.decodeStream(it)
-//            }
-            val isSavedSuccessfully = savePhotoToInternalStorage(uuidImageOneName, imageOneBmp, imageFileOne.absolutePath)
+            val isSavedSuccessfully = savePhotoToInternalStorage(uuidImageOneName, actualImageFileOne, 1)
             if (isSavedSuccessfully) {
 
-                val files = filesDir.listFiles()
-
-                files?.filter { it.canRead() && it.isFile && it.name.endsWith(".jpg") }
-                if (files.isNotEmpty()) {
-                    for (file in files) {
-                        if (file.name == "$uuidImageOneName.jpg") {
-                            imageOneUriToUpload = file.toUri()
-                            imageFileOneToUpload = file
-                            val bytes = file.readBytes()
-                            imageOneBmpToUpload = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-                            selectedImageOne = InternalStoragePhoto(uuidImageOneName, imageOneBmpToUpload, imageOneUriToUpload, imageFileOneToUpload.absolutePath)
-
-                            ivPhoto1.setImageURI(imageOneUriToUpload)
-                            Toast.makeText(this,"$imageOneUriToUpload $",Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                imageFileOneToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),"$uuidImageOneName.jpg")
+                Toast.makeText(this,"${imageFileOneToUpload!!.toUri()}",Toast.LENGTH_SHORT).show()
+                imageOneUriToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),"$uuidImageOneName.jpg").toUri()
+                ivPhoto1.setImageBitmap(imageOneBmp)
+                if (pictureOneSelected) {
+                    imagesUriToUpload.remove(imageOneUriToUpload)
+//                    imagesUriString.remove(imageOneUriToUpload.toString())
                 }
+                imagesUriToUpload.add(imageOneUriToUpload)
+//                imagesUriString.add(imageOneUriToUpload.toString())
+                pictureOneSelected = true
             }
         }
     }
+
     private val selectPictureLauncherTwo = registerForActivityResult(ActivityResultContracts.GetContent()){ uri ->
         if (uri != null) {
-            contentResolver.openInputStream(uri).let {
-                imageTwoBmp = BitmapFactory.decodeStream(it)
-                imageFileTwo = File(uri.path)
+            actualImageFileTwo = FileUtil.from(this, uri)?.also {
+                imageTwoBmp = loadBitmap(it)
                 uuidImageTwoName = UUID.randomUUID().toString()
             }
-//            openFileInput(imageFileOne.name).use {
-//                imageOneBmp = BitmapFactory.decodeStream(it)
-//            }
-            val isSavedSuccessfully = savePhotoToInternalStorage(uuidImageTwoName, imageTwoBmp, imageFileTwo.absolutePath)
+            val isSavedSuccessfully = savePhotoToInternalStorage(uuidImageTwoName, actualImageFileTwo, 2)
             if (isSavedSuccessfully) {
-
-                val files = filesDir.listFiles()
-
-                files?.filter { it.canRead() && it.isFile && it.name.endsWith(".jpg") }
-                if (files.isNotEmpty()) {
-                    for (file in files) {
-                        if (file.name == "$uuidImageTwoName.jpg") {
-                            imageTwoUriToUpload = file.toUri()
-                            imageFileTwoToUpload = file
-                            val bytes = file.readBytes()
-                            imageTwoBmpToUpload = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-                            selectedImageTwo = InternalStoragePhoto(uuidImageTwoName, imageTwoBmpToUpload, imageTwoUriToUpload, imageFileTwoToUpload.absolutePath)
-
-                            ivPhoto2.setImageURI(imageTwoUriToUpload)
-                            Toast.makeText(this,"$imageTwoUriToUpload $",Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                imageFileTwoToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$uuidImageTwoName.jpg")
+                imageTwoUriToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$uuidImageTwoName.jpg").toUri()
+                ivPhoto2.setImageBitmap(imageTwoBmp)
+                if (pictureTwoSelected) {
+                    imagesUriToUpload.remove(imageTwoUriToUpload)
+//                    imagesUriString.remove(imageTwoUriToUpload.toString())
                 }
+                imagesUriToUpload.add(imageTwoUriToUpload)
+//                imagesUriString.add(imageTwoUriToUpload.toString())
+                pictureTwoSelected = true
             }
         }
     }
@@ -164,6 +198,21 @@ class AddPost : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_post)
 
+        addPostLayout = findViewById(R.id.addPostLayout)
+
+        networkConnectionStatus = ConnectionLiveData(applicationContext)
+        checkInternetConnectionStatus()
+
+        auth = Firebase.auth
+
+        storage = Firebase.storage
+
+        storageRef = storage.reference
+
+        btnAddPost = findViewById(R.id.btnAddPost)
+
+        tvAddPhoto = findViewById(R.id.tvAddPhoto)
+
         autoComTvCategories = findViewById(R.id.autoComTvCategories)
         autoComTvMake = findViewById(R.id.autoComTvMake)
         autoComTvCondition = findViewById(R.id.autoComTvCondition)
@@ -171,6 +220,24 @@ class AddPost : AppCompatActivity() {
         autoComTvFuel = findViewById(R.id.autoComTvFuel)
         autoComTvCommonOwnerOr = findViewById(R.id.autoComTvCommonOwnerOr)
         autoComTvCommonSaleOr = findViewById(R.id.autoComTvCommonSaleOr)
+        autoComTvHouseType = findViewById(R.id.autoComTvHouseType)
+        autoComTvHouseSize = findViewById(R.id.autoComTvHouseSize)
+        autoComTvHouseLocation = findViewById(R.id.autoComTvHouseLocation)
+        autoComTvCommonPhone = findViewById(R.id.autoComTvCommonPhone)
+        autoComTvLandLocation = findViewById(R.id.autoComTvLandLocation)
+        autoComTvLandSize = findViewById(R.id.autoComTvLandSize)
+        autoComTvOtherTitle = findViewById(R.id.autoComTvOtherTitle)
+        autoComTvModel = findViewById(R.id.autoComTvModel)
+        autoComTvYear = findViewById(R.id.autoComTvYear)
+        autoComTvColor = findViewById(R.id.autoComTvColor)
+        autoComTvMileage = findViewById(R.id.autoComTvMileage)
+        autoComTvPlate = findViewById(R.id.autoComTvPlate)
+        autoComTvEngineSize = findViewById(R.id.autoComTvEngineSize)
+
+        textInputLayoutCommonDesc = findViewById(R.id.textInputLayoutCommonDesc)
+
+        etCommonPrice = findViewById(R.id.etCommonPrice)
+        etCommonDesc = findViewById(R.id.etCommonDesc)
 
         cvCar = findViewById(R.id.cvCar)
         cvHouse = findViewById(R.id.cvHouse)
@@ -178,6 +245,10 @@ class AddPost : AppCompatActivity() {
         cvOther = findViewById(R.id.cvOther)
 
         cvCommon = findViewById(R.id.cvCommon)
+
+        ivPhoto1.isVisible = false
+        ivPhoto2.isVisible = false
+        tvAddPhoto.isVisible = false
 
         cvCar.isVisible = false
         cvHouse.isVisible = false
@@ -196,11 +267,13 @@ class AddPost : AppCompatActivity() {
             setDisplayShowHomeEnabled(true)
         }
         toolbar.setNavigationOnClickListener {
-            deletePhotosFromInternalStorage()
-            finish();
+            deleteImagesFile()
+            finish()
         }
 
-        deletePhotosFromInternalStorage()
+        setupCustomProgressDialog()
+
+        deleteImagesFile()
 
         val ownerOrSeller = resources.getStringArray(R.array.seller)
         val arrayAdapterOwnerOrSeller = ArrayAdapter(this, R.layout.drop_down_category, ownerOrSeller)
@@ -230,33 +303,745 @@ class AddPost : AppCompatActivity() {
         val arrayAdapter = ArrayAdapter(this, R.layout.drop_down_category, categories)
         autoComTvCategories.setAdapter(arrayAdapter)
 
-        autoComTvCategories.setOnItemClickListener { adapterView, view, i, l ->
+        autoComTvCategories.setOnItemClickListener { adapterView, _, i, _ ->
             val value = adapterView.getItemAtPosition(i)
 //            Toast.makeText(this, value.toString(), Toast.LENGTH_LONG).show()
             changeCategoryVisibility(value.toString())
         }
 
+        etCommonPrice.addTextChangedListener(CurrencyInputWatcher(etCommonPrice,"Birr ", Locale.getDefault()))
+
         ivPhoto1.setOnClickListener {
             selectPictureLauncherOne.launch("image/*")
-//            val imagePickerIntent = Intent(Intent.ACTION_GET_CONTENT)
-//            imagePickerIntent.type = "image/*"
-//            if (imagePickerIntent.resolveActivity(packageManager) != null){
-//                startActivityForResult(imagePickerIntent, PICK_PHOTO_CODE)
-//            }
         }
 
         ivPhoto2.setOnClickListener {
             selectPictureLauncherTwo.launch("image/*")
         }
+
+        btnAddPost.setOnClickListener {
+
+            val isInPutCorrect = checkInputFields()
+            if (isInPutCorrect) {
+                btnAddPost.isEnabled = false
+                Toast.makeText(this, "Every thing is correct", Toast.LENGTH_SHORT).show()
+                if (pictureOneSelected || pictureTwoSelected) {
+                    progressDialog.show()
+                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+                    progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
+                    uploadImages()
+                } else {
+                    progressDialog.show()
+                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Uploading Data..."
+                    progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
+                    uploadProducts()
+                }
+
+//                val currentUser = auth.currentUser
+                /*if (pictureOneSelected && pictureTwoSelected) {
+
+                } else if (pictureOneSelected) {
+                    val uid = UUID.randomUUID().toString()
+                    val photoOneRef = storageRef.child("images/${System.currentTimeMillis()}-photo.jpg")
+                    photoOneRef.putFile(imageOneUriToUpload)
+                        .continueWithTask { photoUploadTask ->
+                            photoOneRef.downloadUrl
+                        }.continueWithTask { photoUrl ->
+                            val selectedCategory = getSelectedCategory(autoComTvCategories.text.toString())
+
+                            if (selectedCategory == "Other") {
+                                val itemToPost = ProductsModel(
+                                    uid,
+                                    autoComTvOtherTitle.text.toString(),
+                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
+                                    "",
+                                    "",
+                                    0,
+                                    0,
+                                    "Other",
+                                    "",
+                                    "",
+                                    etCommonDesc.text.toString(),
+                                    0,
+                                    "",
+                                    "",
+                                    "",
+                                    0,
+                                    "",
+                                    0,
+                                    autoComTvCommonPhone.text.toString().toLong(),
+                                    imagesUriString,
+                                    "",
+                                    FieldValue.serverTimestamp(),
+                                    autoComTvCommonSaleOr.text.toString(),
+                                    false,
+                                    0,
+                                    autoComTvCommonOwnerOr.text.toString(),
+                                    0,
+                                    "",
+                                    FieldValue.serverTimestamp(),
+                                    currentUser!!.uid,
+                                    0,
+                                    0)
+                                val s = etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong()
+                                Toast.makeText(this, "Price = $s Birr", Toast.LENGTH_SHORT).show()
+                                db.collection("products").document(uid)
+                                    .set(itemToPost, SetOptions.merge())
+                                    .addOnCompleteListener { postCreationTask ->
+                                        if (!postCreationTask.isSuccessful){
+                                            Log.e(TAG, "Error writing document", postCreationTask.exception)
+                                            Toast.makeText(this, "POST Failed!!!", Toast.LENGTH_SHORT).show()
+                                        }
+                                        btnAddPost.isEnabled = true
+                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
+                                        pictureOneSelected = false
+                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w(TAG, "Error writing document", e) }
+                            } else if (selectedCategory == "Land") {
+                                val itemToPost = ProductsModel(
+                                    uid,
+                                    "",
+                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
+                                    "",
+                                    "",
+                                    0,
+                                    0,
+                                    "Land",
+                                    "",
+                                    "",
+                                    etCommonDesc.text.toString(),
+                                    0,
+                                    "",
+                                    "",
+                                    "",
+                                    0,
+                                    autoComTvLandLocation.text.toString(),
+                                    0,
+                                    autoComTvCommonPhone.text.toString().toLong(),
+                                    imagesUriString,
+                                    "",
+                                    FieldValue.serverTimestamp(),
+                                    autoComTvCommonSaleOr.text.toString(),
+                                    false,
+                                    0,
+                                    autoComTvCommonOwnerOr.text.toString(),
+                                    autoComTvLandSize.text.toString().toLong(),
+                                    "",
+                                    FieldValue.serverTimestamp(),
+                                    currentUser!!.uid,
+                                    0,
+                                    0)
+                                db.collection("products").add(itemToPost)
+                                    .addOnCompleteListener {
+                                        btnAddPost.isEnabled = true
+                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
+                                        pictureOneSelected = false
+                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else if (selectedCategory == "House") {
+                                val itemToPost = ProductsModel(
+                                    uid,
+                                    "",
+                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
+                                    "",
+                                    "",
+                                    0,
+                                    0,
+                                    "House",
+                                    "",
+                                    "",
+                                    etCommonDesc.text.toString(),
+                                    0,
+                                    "",
+                                    autoComTvHouseType.text.toString(),
+                                    "",
+                                    0,
+                                    autoComTvHouseLocation.text.toString(),
+                                    0,
+                                    autoComTvCommonPhone.text.toString().toLong(),
+                                    imagesUriString,
+                                    "",
+                                    FieldValue.serverTimestamp(),
+                                    autoComTvCommonSaleOr.text.toString(),
+                                    false,
+                                    0,
+                                    autoComTvCommonOwnerOr.text.toString(),
+                                    autoComTvHouseSize.text.toString().toLong(),
+                                    "",
+                                    FieldValue.serverTimestamp(),
+                                    currentUser!!.uid,
+                                    0,
+                                    0)
+                                db.collection("products").add(itemToPost)
+                                    .addOnCompleteListener {
+                                        btnAddPost.isEnabled = true
+                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
+                                        pictureOneSelected = false
+                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else if (selectedCategory == "Cars") {
+                                val itemToPost = ProductsModel(
+                                    uid,
+                                    "",
+                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
+                                    autoComTvMake.text.toString(),
+                                    autoComTvModel.text.toString(),
+                                    0,
+                                    0,
+                                    "Cars",
+                                    autoComTvColor.text.toString(),
+                                    autoComTvCondition.text.toString(),
+                                    etCommonDesc.text.toString(),
+                                    autoComTvEngineSize.text.toString().toLong(),
+                                    autoComTvFuel.text.toString(),
+                                    autoComTvHouseType.text.toString(),
+                                    "",
+                                    0,
+                                    "",
+                                    0,
+                                    autoComTvCommonPhone.text.toString().toLong(),
+                                    imagesUriString,
+                                    autoComTvPlate.text.toString(),
+                                    FieldValue.serverTimestamp(),
+                                    autoComTvCommonSaleOr.text.toString(),
+                                    false,
+                                    0,
+                                    autoComTvCommonOwnerOr.text.toString(),
+                                    0,
+                                    autoComTvTransmission.text.toString(),
+                                    FieldValue.serverTimestamp(),
+                                    currentUser!!.uid,
+                                    0,
+                                    autoComTvYear.text.toString().toLong())
+                                db.collection("products").add(itemToPost)
+                                    .addOnCompleteListener {
+                                        btnAddPost.isEnabled = true
+                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
+                                        pictureOneSelected = false
+                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else return@continueWithTask null
+
+                        }
+                } else if (pictureTwoSelected) {
+                    val photoOneRef = storageRef.child("images/${System.currentTimeMillis()}-photo.jpg")
+                    photoOneRef.putFile(imageOneUriToUpload)
+                        .addOnSuccessListener {
+                            btnAddPost.isEnabled = true
+                            ivPhoto1.setImageResource(R.drawable.ic_add_photo)
+                            pictureTwoSelected = false
+                            Toast.makeText(this,"Image upload successful!!",Toast.LENGTH_SHORT).show()
+                        }
+                }*/
+            }
+        }
+
     }
 
-    private fun deletePhotosFromInternalStorage() {
+    private fun checkInternetConnectionStatus() {
+        networkConnectionStatus.observe(this, androidx.lifecycle.Observer { isConnected ->
+
+            if (!isConnected) {
+                val snackBar = Snackbar.make(
+                    addPostLayout,
+                    "No Internet Connection!",
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                snackBar.setAction("Retry"){
+                    snackBar.dismiss()
+                    checkInternetConnectionStatus()
+                }.show()
+            }
+
+        })
+    }
+
+    private fun setupCustomProgressDialog() {
+        val alertView = View.inflate(this@AddPost, R.layout.custom_progress_bar,null)
+
+        val alertBuilder = AlertDialog.Builder(this@AddPost)
+        alertBuilder.setView(alertView)
+        alertBuilder.setCancelable(false)
+        progressDialog = alertBuilder.create()
+        progressDialog.setCanceledOnTouchOutside(false)
+//        progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+//        progressDialog.show()
+//        progressDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+    }
+
+    private fun productUploadSuccessOrFailedDialog() {
+        val dialog = MaterialDialog(this)
+            .noAutoDismiss()
+            .cancelable(false)
+            .cornerRadius(14f)
+            .customView(R.layout.upload_success_or_failed_dialog)
+        dialog.findViewById<Button>(R.id.btnUploadStatusYes).setOnClickListener {
+            clearImageSelection()
+            clearInputFields()
+            changeCategoryVisibility()
+            dialog.dismiss()
+        }
+        dialog.findViewById<Button>(R.id.btnUploadStatusNo).setOnClickListener {
+            deleteImagesFile()
+            finish()
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun uploadImages() {
+        var imageUploadCount = 0
+        for (image in imagesUriToUpload) {
+            val photoRef = storageRef.child("images/${System.currentTimeMillis()}-photo.jpg")
+            photoRef.putFile(image)
+                .addOnSuccessListener {
+                    photoRef.downloadUrl
+                        .addOnSuccessListener { url ->
+                            imagesUriString.add(url.toString())
+                            imageUploadCount++
+                            if (imageUploadCount == imagesUriToUpload.size) {
+                                progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Uploading Data..."
+                                uploadProducts(imagesUriString)
+                            }
+                        }
+                        .addOnFailureListener {
+                            TODO("Finish image upload failed with dialog box")
+                        }
+                }
+        }
+    }
+
+    private fun uploadProducts(imagesUrl: ArrayList<String> = arrayListOf("")) {
+        val selectedCategory = getSelectedCategory(autoComTvCategories.text.toString())
+        val currentUser = auth.currentUser
+        val uid = UUID.randomUUID().toString()
+
+        when (selectedCategory) {
+            "Other" -> {
+    //            val price = etCommonPrice.text.toString().filter { char ->
+    //                char.isDigit()
+    //            }.toLong()
+                val itemToPost = ProductsModel(
+                    uid,
+                    autoComTvOtherTitle.text.toString(),
+                    etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+                    "",
+                    "",
+                    0,
+                    0,
+                    "Other",
+                    "",
+                    "",
+                    etCommonDesc.text.toString(),
+                    0,
+                    "",
+                    "",
+                    "",
+                    0,
+                    "",
+                    0,
+                    autoComTvCommonPhone.text.toString().toLong(),
+                    imagesUrl,
+                    "",
+                    autoComTvCommonSaleOr.text.toString(),
+                    false,
+                    0,
+                    autoComTvCommonOwnerOr.text.toString(),
+                    0,
+                    "",
+                    currentUser!!.uid,
+                    0,
+                    0)
+    //            val s = etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong()
+    //            Toast.makeText(this, "Price = $s Birr", Toast.LENGTH_SHORT).show()
+                db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
+                    .addOnSuccessListener {
+                        btnAddPost.isEnabled = true
+                        clearImageSelection()
+                        progressDialog.dismiss()
+                        productUploadSuccessOrFailedDialog()
+                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error writing document", e)
+                        btnAddPost.isEnabled = true
+                        progressDialog.dismiss()
+                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            "Land" -> {
+                val itemToPost = ProductsModel(
+                    uid,
+                    "",
+                    etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+                    "",
+                    "",
+                    0,
+                    0,
+                    "Land",
+                    "",
+                    "",
+                    etCommonDesc.text.toString(),
+                    0,
+                    "",
+                    "",
+                    "",
+                    0,
+                    autoComTvLandLocation.text.toString(),
+                    0,
+                    autoComTvCommonPhone.text.toString().toLong(),
+                    imagesUrl,
+                    "",
+                    autoComTvCommonSaleOr.text.toString(),
+                    false,
+                    0,
+                    autoComTvCommonOwnerOr.text.toString(),
+                    autoComTvLandSize.text.toString().toLong(),
+                    "",
+                    currentUser!!.uid,
+                    0,
+                    0)
+                db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
+                    .addOnSuccessListener {
+                        btnAddPost.isEnabled = true
+                        clearImageSelection()
+                        progressDialog.dismiss()
+                        productUploadSuccessOrFailedDialog()
+                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error writing document", e)
+                        btnAddPost.isEnabled = true
+                        progressDialog.dismiss()
+                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            "House" -> {
+                val itemToPost = ProductsModel(
+                    uid,
+                    "",
+                    etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+                    "",
+                    "",
+                    0,
+                    0,
+                    "House",
+                    "",
+                    "",
+                    etCommonDesc.text.toString(),
+                    0,
+                    "",
+                    autoComTvHouseType.text.toString(),
+                    "",
+                    0,
+                    autoComTvHouseLocation.text.toString(),
+                    0,
+                    autoComTvCommonPhone.text.toString().toLong(),
+                    imagesUrl,
+                    "",
+                    autoComTvCommonSaleOr.text.toString(),
+                    false,
+                    0,
+                    autoComTvCommonOwnerOr.text.toString(),
+                    autoComTvHouseSize.text.toString().toLong(),
+                    "",
+                    currentUser!!.uid,
+                    0,
+                    0)
+                db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
+                    .addOnSuccessListener {
+                        btnAddPost.isEnabled = true
+                        clearImageSelection()
+                        progressDialog.dismiss()
+                        productUploadSuccessOrFailedDialog()
+                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error writing document", e)
+                        btnAddPost.isEnabled = true
+                        progressDialog.dismiss()
+                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            "Cars" -> {
+                val itemToPost = ProductsModel(
+                    uid,
+                    "",
+                    etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+                    autoComTvMake.text.toString(),
+                    autoComTvModel.text.toString(),
+                    0,
+                    0,
+                    "Cars",
+                    autoComTvColor.text.toString(),
+                    autoComTvCondition.text.toString(),
+                    etCommonDesc.text.toString(),
+                    autoComTvEngineSize.text.toString().toLong(),
+                    autoComTvFuel.text.toString(),
+                    autoComTvHouseType.text.toString(),
+                    "",
+                    0,
+                    "",
+                    0,
+                    autoComTvCommonPhone.text.toString().toLong(),
+                    imagesUrl,
+                    autoComTvPlate.text.toString(),
+                    autoComTvCommonSaleOr.text.toString(),
+                    false,
+                    0,
+                    autoComTvCommonOwnerOr.text.toString(),
+                    0,
+                    autoComTvTransmission.text.toString(),
+                    currentUser!!.uid,
+                    0,
+                    autoComTvYear.text.toString().toLong())
+                db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
+                    .addOnSuccessListener {
+                        btnAddPost.isEnabled = true
+                        clearImageSelection()
+                        progressDialog.dismiss()
+                        productUploadSuccessOrFailedDialog()
+                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error writing document", e)
+                        btnAddPost.isEnabled = true
+                        progressDialog.dismiss()
+                        Toast.makeText(this, "POST Failed!!! $e", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
+    }
+
+    private fun getSelectedCategory(category: String): String {
+        when(category) {
+            "House" -> {
+                return category
+            }
+            "Cars" -> {
+                return category
+            }
+            "Land" -> {
+                return category
+            }
+            "Other" -> {
+                return category
+            }
+        }
+        return ""
+    }
+
+    private fun checkInputFields(): Boolean {
+
+        when(getSelectedCategory(autoComTvCategories.text.toString())) {
+            "House" -> {
+                if (!pictureOneSelected && !pictureTwoSelected) {
+                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvHouseType.text.isBlank()) {
+                    Toast.makeText(this, "Please input House type!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvHouseSize.text.isBlank()) {
+                    Toast.makeText(this, "Please input House Size in Meter Square!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvHouseLocation.text.isBlank()) {
+                    Toast.makeText(this, "Please input Location of the house!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if you are Owner or Broker of the House!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonSaleOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if the House is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonPrice.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input the price of the House in Birr!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonDesc.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input Description of the House!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonPhone.text.isBlank()) {
+                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else {
+                    return true
+                }
+            }
+            "Cars" -> {
+                if (!pictureOneSelected && !pictureTwoSelected) {
+                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvMake.text.isBlank()) {
+                    Toast.makeText(this, "Please select the Make/Brand of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvModel.text.isBlank()) {
+                    Toast.makeText(this, "Please input Model of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvYear.text.isBlank()) {
+                    Toast.makeText(this, "Please input year of manufactured of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvColor.text.isBlank()) {
+                    Toast.makeText(this, "Please input Color of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCondition.text.isBlank()) {
+                    Toast.makeText(this, "Please select the Condition of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvTransmission.text.isBlank()) {
+                    Toast.makeText(this, "Please select the Transmission type of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvMileage.text.isBlank()) {
+                    autoComTvMileage.setText("0")
+
+                } else if (autoComTvFuel.text.isBlank()) {
+                    Toast.makeText(this, "Please select Fuel type of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvPlate.text.isBlank()) {
+                    autoComTvPlate.setText("0")
+
+                } else if (autoComTvEngineSize.text.isBlank()) {
+                    autoComTvEngineSize.setText("0")
+
+                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if you are Owner or Broker of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonSaleOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if the Car is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonPrice.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input the price of the Car in Birr!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonDesc.text!!.isBlank()) {
+                    etCommonDesc.setText("")
+//                    return false
+                } else if (autoComTvCommonPhone.text.isBlank()) {
+                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else {
+                    return true
+                }
+            }
+            "Land" -> {
+//                if (!pictureOneSelected && !pictureTwoSelected) {
+//                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+//                    return false
+//                } else
+                if (autoComTvLandLocation.text.isBlank()) {
+                    Toast.makeText(this, "Please input the Location of the Land!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvLandSize.text.isBlank()) {
+                    Toast.makeText(this, "Please input Land Size in Meter Square!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if you are Owner or Broker of the Land!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonSaleOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if the Land is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonPrice.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input the price of the Land in Birr!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonDesc.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input Description of the Land!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonPhone.text.isBlank()) {
+                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else {
+                    return true
+                }
+            }
+            "Other" -> {
+//                if (!pictureOneSelected && !pictureTwoSelected) {
+//                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+//                    return false
+//                } else
+                if (autoComTvOtherTitle.text.isBlank()) {
+                    Toast.makeText(this, "Please input the Item type!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if you are Owner or Broker of the Item!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonSaleOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if the Item is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonPrice.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input the price of the Item in Birr!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonDesc.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input Description of the Item!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonPhone.text.isBlank()) {
+                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    override fun onBackPressed() {
+
+        if (progressDialog.isShowing){
+            return
+        } else {
+            deleteImagesFile()
+            finish()
+        }
+
+    }
+
+    private fun deleteImagesFile() {
+        val imageDirs = getExternalFilesDirs(Environment.DIRECTORY_PICTURES)
+        if (imageDirs.isNotEmpty()) {
+            for (imageDir in imageDirs) {
+                if (imageDir.name == "Pictures") {
+                    val files = imageDir.listFiles()
+                    for (file in files) {
+                        try {
+                            file.delete()
+//                            Toast.makeText(this,"Deleted ${file.name}",Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Log.v(TAG, "Failed to delete:" + e.printStackTrace())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deletePhotosFromInternalStorage(name: String? = null) {
         lifecycleScope.launch {
             val photos = loadPhotosFromInternalStorage()
-            if (photos.isNotEmpty()) {
+            if (!name.isNullOrEmpty()) {
+                if (photos.isNotEmpty()) {
+                    for (photo in photos) {
+                        if (photo.name == "$name.jpg") {
+                            deleteFile(photo.name)
+                            Toast.makeText(this@AddPost,"Deleted ${photo.name}",Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                return@launch
+            } else if (photos.isNotEmpty()) {
                 for (photo in photos) {
-                    deleteFile(photo.name)
-                    Toast.makeText(this@AddPost,"finished",Toast.LENGTH_SHORT).show()
+                    val isDeleteSuccess = deleteFile(photo.name)
+                    try {
+                        deleteFile(photo.name)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Log.d(TAG, "Failed to delete:" + e.printStackTrace())
+                    }
+                    if (isDeleteSuccess) {
+                        Toast.makeText(this@AddPost,"Deleted All Files",Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@AddPost,"cannot delete ${photo.name}",Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -264,44 +1049,116 @@ class AddPost : AppCompatActivity() {
 
     private suspend fun loadPhotosFromInternalStorage(): List<InternalStoragePhoto> {
         return withContext(Dispatchers.IO) {
-            val files = filesDir.listFiles()
-            files?.filter { it.canRead() && it.isFile && it.name.endsWith(".jpg") }?.map {
+            val files = getExternalFilesDirs(Environment.DIRECTORY_PICTURES)
+//            val files = storageDir.listFiles()
+            if (files.isEmpty()) {
+                return@withContext emptyList()
+            }
+            val fileE = files[0].listFiles()
+            fileE?.filter { it.name.endsWith(".jpg") || it.name.endsWith(".png")}?.map {
                 val bytes = it.readBytes()
                 val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+//                if (bmp == null){
+//                    bmp = BitmapFactory.decodeResource(resources,R.drawable.ic_add_photo)
+//                }
+
                 InternalStoragePhoto(it.name, bmp, it.toUri(), it.absolutePath)
             } ?: listOf()
         }
     }
 
-    private fun savePhotoToInternalStorage(filename: String, bmp: Bitmap, filePath: String): Boolean {
-        return try {
-            openFileOutput("$filename.jpg", MODE_PRIVATE).use { stream ->
-                val resizedBmp = bmp.resize(620)
+    private fun savePhotoToInternalStorage(filename: String, imageFileSelected: File?, selectedImage: Int): Boolean {
 
-                val targetSize: Double = 0.2
-                val file = File(filePath)
-                val length = file.length()
+        try {
+            imageFileSelected?.let { imageFile ->
+                lifecycleScope.launch {
+                    // Default compression with custom destination file
 
-                val fileSizeInKB = (length / 1024).toString().toDouble()
-                val fileSizeInMB = (fileSizeInKB / 1024).toString().toDouble()
+                    val targetSize = 200.0
+                    val length = imageFile.length()
+                    val fileSizeInKB = (length / 1024).toString().toDouble()
 
-                var quality = 100
-                if (fileSizeInMB > targetSize) {
-                    quality = ((targetSize / fileSizeInMB) * 100).toInt()
-                }
+                    var quality = 100
+                    if (fileSizeInKB > targetSize) {
+                        quality = ((targetSize / fileSizeInKB) * 100).toInt()
+                    }
 
-                if (!resizedBmp.compress(Bitmap.CompressFormat.JPEG, quality, stream)) {
-                    throw IOException("Couldn't save bitmap.")
+                    if (selectedImage == 1) {
+                        if (quality == 100) {
+                            compressedImageOne = Compressor.compress(this@AddPost, imageFile) {
+                                default(width = 620)
+                                getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.also {
+                                    val file = File("${it.absolutePath}${File.separator}${filename}.jpg")
+                                    destination(file)
+                                }
+                            }
+                        } else {
+                            compressedImageOne = Compressor.compress(this@AddPost, imageFile) {
+                                default(width = 620, format = Bitmap.CompressFormat.WEBP, quality = quality)
+                                getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.also {
+                                    val file = File("${it.absolutePath}${File.separator}${filename}.jpg")
+                                    destination(file)
+                                }
+                            }
+                        }
+                    } else if (selectedImage == 2) {
+                        if (quality == 100) {
+                            compressedImageTwo = Compressor.compress(this@AddPost, imageFile) {
+                                default(width = 620)
+                                getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.also {
+                                    val file = File("${it.absolutePath}${File.separator}${filename}.jpg")
+                                    destination(file)
+                                }
+                            }
+                        } else {
+                            compressedImageTwo = Compressor.compress(this@AddPost, imageFile) {
+                                default(width = 620, format = Bitmap.CompressFormat.WEBP, quality = quality)
+                                getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.also {
+                                    val file = File("${it.absolutePath}${File.separator}${filename}.jpg")
+                                    destination(file)
+                                }
+                            }
+                        }
+                    }
+//                    setCompressedImage()
                 }
             }
-            true
+            return true
         } catch (e: IOException) {
             e.printStackTrace()
-            false
+            return false
         }
+/*
+//        return try {
+//            openFileOutput("$filename.jpg", MODE_PRIVATE).use { stream ->
+////                val resizedBmp = bmp.resize(620)
+//
+//                val targetSize: Double = 200.0
+//                val file = File(filePath)
+//                val length = file.length()
+//
+//                val fileSizeInKB = (length / 1024).toString().toDouble()
+//                val fileSizeInMB = (fileSizeInKB / 1024).toString().toDouble()
+//
+//                var quality = 100
+//                if (fileSizeInKB > targetSize) {
+//                    quality = ((targetSize / fileSizeInKB) * 100).toInt()
+//                }
+//
+//                if (!bmp.compress(Bitmap.CompressFormat.JPEG, quality, stream)) {
+//                    Toast.makeText(this,"Couldn't save bitmap",Toast.LENGTH_SHORT).show()
+//                    throw IOException("Couldn't save bitmap.")
+//                }
+//            }
+//            true
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//            false
+//        } */
     }
 
-    private fun createImageFile(fileName: String = "temp_image"): File {
+/*    private fun createImageFile(fileName: String = "temp_image"): File {
         val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(fileName, ".jpg", storageDir)
     }
@@ -343,11 +1200,50 @@ class AddPost : AppCompatActivity() {
         catch (e: Exception) {
             e.printStackTrace()
         }
+    }*/
+
+    private fun clearInputFields() {
+        autoComTvCategories.setText("")
+        autoComTvOtherTitle.setText("")
+        autoComTvCommonOwnerOr.setText("")
+        autoComTvCommonSaleOr.setText("")
+        autoComTvCommonPhone.setText("")
+        etCommonDesc.setText("")
+        etCommonPrice.setText("")
+        autoComTvLandLocation.setText("")
+        autoComTvLandSize.setText("")
+        autoComTvHouseLocation.setText("")
+        autoComTvHouseSize.setText("")
+        autoComTvHouseType.setText("")
+        autoComTvMake.setText("")
+        autoComTvModel.setText("")
+        autoComTvYear.setText("")
+        autoComTvColor.setText("")
+        autoComTvCondition.setText("")
+        autoComTvTransmission.setText("")
+        autoComTvMileage.setText("")
+        autoComTvFuel.setText("")
+        autoComTvPlate.setText("")
+        autoComTvEngineSize.setText("")
+        btnAddPost.isEnabled = true
     }
 
-    private fun changeCategoryVisibility(value: String) {
+    private fun clearImageSelection() {
+        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
+        ivPhoto2.setImageResource(R.drawable.ic_add_photo)
+        imagesUriString.clear()
+        imagesUriToUpload.clear()
+        pictureOneSelected = false
+        pictureTwoSelected = false
+    }
+
+    private fun changeCategoryVisibility(value: String = "") {
         when (value) {
             "Cars" -> {
+                textInputLayoutCommonDesc.hint = "Description"
+                tvAddPhoto.isVisible = true
+                ivPhoto1.isVisible = true
+                ivPhoto2.isVisible = true
                 cvCar.isVisible = true
                 cvHouse.isVisible = false
                 cvLand.isVisible = false
@@ -355,6 +1251,10 @@ class AddPost : AppCompatActivity() {
                 cvCommon.isVisible = true
             }
             "House" -> {
+                textInputLayoutCommonDesc.hint = "Description*"
+                tvAddPhoto.isVisible = true
+                ivPhoto1.isVisible = true
+                ivPhoto2.isVisible = true
                 cvCar.isVisible = false
                 cvHouse.isVisible = true
                 cvLand.isVisible = false
@@ -362,6 +1262,10 @@ class AddPost : AppCompatActivity() {
                 cvCommon.isVisible = true
             }
             "Land" -> {
+                textInputLayoutCommonDesc.hint = "Description*"
+                tvAddPhoto.isVisible = true
+                ivPhoto1.isVisible = true
+                ivPhoto2.isVisible = true
                 cvCar.isVisible = false
                 cvHouse.isVisible = false
                 cvLand.isVisible = true
@@ -369,17 +1273,33 @@ class AddPost : AppCompatActivity() {
                 cvCommon.isVisible = true
             }
             "Other" -> {
+                textInputLayoutCommonDesc.hint = "Description*"
+                tvAddPhoto.isVisible = true
+                ivPhoto1.isVisible = true
+                ivPhoto2.isVisible = true
                 cvCar.isVisible = false
                 cvHouse.isVisible = false
                 cvLand.isVisible = false
                 cvOther.isVisible = true
                 cvCommon.isVisible = true
             }
+            "" -> {
+                textInputLayoutCommonDesc.hint = "Description*"
+                tvAddPhoto.isVisible = false
+                ivPhoto1.isVisible = false
+                ivPhoto2.isVisible = false
+                cvCar.isVisible = false
+                cvHouse.isVisible = false
+                cvLand.isVisible = false
+                cvOther.isVisible = false
+                cvCommon.isVisible = false
+            }
         }
     }
 
 }
 
+/*
 // Extension function to resize bitmap using new width value by keeping aspect ratio
 fun Bitmap.resize(width:Int):Bitmap{
 
@@ -392,4 +1312,4 @@ fun Bitmap.resize(width:Int):Bitmap{
         height,
         false
     )
-}
+}*/
