@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import net.ykproperties.ykproperties.Model.ProductModelClass
 import com.bumptech.glide.Glide
+import net.ykproperties.ykproperties.Model.ProductsModel
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-class ProductAdapter (val context: Context, val items: ArrayList<ProductModelClass>) :
+class ProductAdapter (val context: Context, private val items: ArrayList<ProductsModel>) :
     RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
     private lateinit var mListener : OnItemClickListener
@@ -55,10 +58,37 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
 
         val item = items[position]
 
-        holder.tvProductIdGridV.text = item.title
-        holder.tvTitleGridV.text = item.title
-        holder.tvPriceGridV.text = "${item.price} - For SALE"
-        Glide.with(context).load(item.imgUrl).into(holder.ivItemsGridV)
+        if (item.category == "Cars") {
+            holder.tvProductIdGridV.text = item.uid
+            holder.tvTitleGridV.text = "${item.make} ${item.model}"
+            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
+        } else if (item.category == "House") {
+            holder.tvProductIdGridV.text = item.uid
+            holder.tvTitleGridV.text = "Location: ${item.location}"
+            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
+        } else if (item.category == "Other") {
+            holder.tvProductIdGridV.text = item.uid
+            holder.tvTitleGridV.text = item.title
+            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
+        } else if (item.category == "Land") {
+            holder.tvProductIdGridV.text = item.uid
+            holder.tvTitleGridV.text = "Location: ${item.location}"
+            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            if (item.pictures.isNotEmpty()) {
+                if (item.pictures[0] != "") {
+                    Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
+                } else {
+                    holder.ivItemsGridV.setImageResource(R.drawable.ic_add_photo)
+                }
+            }
+        }
+//        holder.tvProductIdGridV.text = item.uid
+//        holder.tvTitleGridV.text = "Location ${item.location}"
+//        holder.tvPriceGridV.text = "${item.price} ${item.purpose}"
+//        Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
 //        holder.tvGender.text = item.gender
 //        holder.tvWeight.text = item.weight.toString()
 //        holder.tvHeight.text = item.height.toString()
@@ -78,16 +108,20 @@ class ProductAdapter (val context: Context, val items: ArrayList<ProductModelCla
      */
     class ViewHolder(view: View, listener: OnItemClickListener) : RecyclerView.ViewHolder(view) {
         // Holds the TextView that will add each item to
-        val tvTitleGridV:TextView = view.findViewById<TextView>(R.id.tvTitleGridV)
-        val tvPriceGridV :TextView = view.findViewById<TextView>(R.id.tvPriceGridV)
-        val ivItemsGridV: ImageView = view.findViewById<ImageView>(R.id.ivItemsGridV)
-        val tvProductIdGridV: TextView = view.findViewById<TextView>(R.id.tvProductIdGridV)
+        val tvTitleGridV:TextView = view.findViewById(R.id.tvTitleGridV)
+        val tvPriceGridV :TextView = view.findViewById(R.id.tvPriceGridV)
+        val ivItemsGridV: ImageView = view.findViewById(R.id.ivItemsGridV)
+        val tvProductIdGridV: TextView = view.findViewById(R.id.tvProductIdGridV)
 
         init {
             view.setOnClickListener {
                 listener.onItemClick(absoluteAdapterPosition)
             }
         }
+
+    }
+
+    private fun formatPrice() {
 
     }
 }

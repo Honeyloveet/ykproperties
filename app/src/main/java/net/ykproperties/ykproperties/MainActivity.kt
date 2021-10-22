@@ -32,15 +32,14 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
-import net.ykproperties.ykproperties.Model.ProductModelClass
+import net.ykproperties.ykproperties.Model.ProductsModel
 import net.ykproperties.ykproperties.util.ConnectionLiveData
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
@@ -85,8 +84,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var selectedFilter = 1
     private var isLoggedIn: Boolean = false
 
-    private val productsList: ArrayList<ProductModelClass> = ArrayList()
-    private val itemAdapter = ProductAdapter(this, productsList)
+    private var products: ArrayList<ProductsModel> = ArrayList()
+
+//    private val products: ArrayList<ProductsModel> = ArrayList()
+    private val itemAdapter = ProductAdapter(this, this.products)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,7 +133,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        changeLoginLogoutMenu()
         createGoogleRequest()
 
-        getProductsList("All")
+        getProductsData("All")
+//        getProductsList("All")
 
 //        productsList
 
@@ -140,68 +142,84 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onItemClick(position: Int) {
 //                Toast.makeText(this@MainActivity,"You Clicked on item no. $position",Toast.LENGTH_SHORT).show()
 
-                when (productsList[position].category) {
+                when (this@MainActivity.products[position].category) {
                     "Cars" -> {
                         val intent = Intent(this@MainActivity, CarDetails::class.java)
-                        intent.putExtra("id",productsList[position].id)
-                        intent.putExtra("title",productsList[position].title)
-                        intent.putExtra("price",productsList[position].price)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("category",productsList[position].category)
-                        intent.putExtra("description",productsList[position].description)
-                        intent.putExtra("posted",productsList[position].posted)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("location",productsList[position].location)
-                        intent.putExtra("size",productsList[position].size)
-                        intent.putExtra("year",productsList[position].year)
+                        intent.putExtra("id", this@MainActivity.products[position].uid)
+                        intent.putExtra("make", this@MainActivity.products[position].make)
+                        intent.putExtra("model", this@MainActivity.products[position].model)
+                        intent.putExtra("price", this@MainActivity.products[position].price)
+                        intent.putExtra("imgUrls",products[position].pictures)
+                        intent.putExtra("category", this@MainActivity.products[position].category)
+                        intent.putExtra("description", this@MainActivity.products[position].description)
+                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
+                        intent.putExtra("condition", this@MainActivity.products[position].condition)
+                        intent.putExtra("year", this@MainActivity.products[position].year)
+                        intent.putExtra("color", this@MainActivity.products[position].color)
+                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
+                        intent.putExtra("seller", this@MainActivity.products[position].seller)
+                        intent.putExtra("transmission", this@MainActivity.products[position].transmission)
+                        intent.putExtra("views", this@MainActivity.products[position].views)
+                        intent.putExtra("fuel", this@MainActivity.products[position].fuel)
+                        intent.putExtra("engineSize", this@MainActivity.products[position].engineSize)
+                        intent.putExtra("phone", this@MainActivity.products[position].phone)
+                        intent.putExtra("plate", this@MainActivity.products[position].plate)
+                        intent.putExtra("mileage", this@MainActivity.products[position].mileage)
+                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
 
                         startActivity(intent)
                     }
                     "House" -> {
                         val intent = Intent(this@MainActivity, HouseDetails::class.java)
-                        intent.putExtra("id",productsList[position].id)
-                        intent.putExtra("title",productsList[position].title)
-                        intent.putExtra("price",productsList[position].price)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("category",productsList[position].category)
-                        intent.putExtra("description",productsList[position].description)
-                        intent.putExtra("posted",productsList[position].posted)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("location",productsList[position].location)
-                        intent.putExtra("size",productsList[position].size)
-                        intent.putExtra("year",productsList[position].year)
+                        intent.putExtra("id", this@MainActivity.products[position].uid)
+                        intent.putExtra("location", this@MainActivity.products[position].location)
+                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
+                        intent.putExtra("price", this@MainActivity.products[position].price)
+                        intent.putExtra("imgUrls",products[position].pictures)
+                        intent.putExtra("category", this@MainActivity.products[position].category)
+                        intent.putExtra("description", this@MainActivity.products[position].description)
+                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
+                        intent.putExtra("size", this@MainActivity.products[position].size)
+                        intent.putExtra("houseType", this@MainActivity.products[position].houseType)
+                        intent.putExtra("views", this@MainActivity.products[position].views)
+                        intent.putExtra("phone", this@MainActivity.products[position].phone)
+                        intent.putExtra("seller", this@MainActivity.products[position].seller)
+                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
 
                         startActivity(intent)
                     }
                     "Land" -> {
                         val intent = Intent(this@MainActivity, LandDetails::class.java)
-                        intent.putExtra("id",productsList[position].id)
-                        intent.putExtra("title",productsList[position].title)
-                        intent.putExtra("price",productsList[position].price)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("category",productsList[position].category)
-                        intent.putExtra("description",productsList[position].description)
-                        intent.putExtra("posted",productsList[position].posted)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("location",productsList[position].location)
-                        intent.putExtra("size",productsList[position].size)
-                        intent.putExtra("year",productsList[position].year)
+                        intent.putExtra("id", this@MainActivity.products[position].uid)
+                        intent.putExtra("location", this@MainActivity.products[position].location)
+                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
+                        intent.putExtra("price", this@MainActivity.products[position].price)
+                        intent.putExtra("imgUrls",products[position].pictures)
+                        intent.putExtra("category", this@MainActivity.products[position].category)
+                        intent.putExtra("description", this@MainActivity.products[position].description)
+                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
+                        intent.putExtra("size", this@MainActivity.products[position].size)
+                        intent.putExtra("views", this@MainActivity.products[position].views)
+                        intent.putExtra("phone", this@MainActivity.products[position].phone)
+                        intent.putExtra("seller", this@MainActivity.products[position].seller)
+                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
 
                         startActivity(intent)
                     }
                     "Other" -> {
                         val intent = Intent(this@MainActivity, OtherDetails::class.java)
-                        intent.putExtra("id",productsList[position].id)
-                        intent.putExtra("title",productsList[position].title)
-                        intent.putExtra("price",productsList[position].price)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("category",productsList[position].category)
-                        intent.putExtra("description",productsList[position].description)
-                        intent.putExtra("posted",productsList[position].posted)
-                        intent.putExtra("imgUrl",productsList[position].imgUrl)
-                        intent.putExtra("location",productsList[position].location)
-                        intent.putExtra("size",productsList[position].size)
-                        intent.putExtra("year",productsList[position].year)
+                        intent.putExtra("id", this@MainActivity.products[position].uid)
+                        intent.putExtra("title", this@MainActivity.products[position].title)
+                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
+                        intent.putExtra("price", this@MainActivity.products[position].price)
+                        intent.putExtra("imgUrls",products[position].pictures)
+                        intent.putExtra("category", this@MainActivity.products[position].category)
+                        intent.putExtra("description", this@MainActivity.products[position].description)
+                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
+                        intent.putExtra("views", this@MainActivity.products[position].views)
+                        intent.putExtra("phone", this@MainActivity.products[position].phone)
+                        intent.putExtra("seller", this@MainActivity.products[position].seller)
+                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
 
                         startActivity(intent)
                     }
@@ -224,31 +242,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         btnCatHouse.setOnClickListener {
             if (selectedFilter != 3){
-                getProductsList("House")
+                getProductsData("House")
                 selectedFilter = 3
             }
         }
         btnCatLand.setOnClickListener {
             if (selectedFilter != 4){
-                getProductsList("Land")
+                getProductsData("Land")
                 selectedFilter = 4
             }
         }
         btnCatAll.setOnClickListener {
             if (selectedFilter != 1){
-                getProductsList("All")
+                getProductsData("All")
                 selectedFilter = 1
             }
         }
         btnCatOther.setOnClickListener {
             if (selectedFilter != 5){
-                getProductsList("Other")
+                getProductsData("Other")
                 selectedFilter = 5
             }
         }
         btnCatCars.setOnClickListener {
             if (selectedFilter != 2){
-                getProductsList("Cars")
+                getProductsData("Cars")
                 selectedFilter = 2
             }
         }
@@ -375,7 +393,60 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
     }
 
-    private fun getProductsList(categoryType: String){
+    private fun getProductsData(categoryType: String) {
+        val productReference = db
+            .collection("products")
+            .limit(20)
+            .orderBy("postDate", Query.Direction.DESCENDING)
+        productReference.addSnapshotListener { snapshot, exception ->
+            if (exception != null || snapshot == null) {
+                Log.e(TAG, "Exception when querying products", exception)
+                return@addSnapshotListener
+            }
+            val productList = snapshot.toObjects(ProductsModel::class.java)
+            this.products.clear()
+            for (product in productList) {
+                if (categoryType == "Cars" && product.category == "Cars") {
+                    this.products.add(product)
+                } else if (categoryType == "House" && product.category == "House") {
+                    this.products.add(product)
+                } else if (categoryType == "Land" && product.category == "Land") {
+                    this.products.add(product)
+                } else if (categoryType == "Other" && product.category == "Other") {
+                    this.products.add(product)
+                } else if (categoryType == "All") {
+                    this.products.add(product)
+                }
+            }
+            when (categoryType) {
+                "Cars" -> {
+                    selectedFilter = 2
+                }
+                "House" -> {
+                    selectedFilter = 3
+                }
+                "Land" -> {
+                    selectedFilter = 4
+                }
+                "Other" -> {
+                    selectedFilter = 5
+                }
+                else -> {
+                    selectedFilter = 1
+                }
+            }
+//            this.products.addAll(productList)
+            // Set the LayoutManager that this RecyclerView will use.
+            rvItems.layoutManager = GridLayoutManager(this, 2)
+            rvItems.adapter = itemAdapter
+            itemAdapter.notifyDataSetChanged()
+//            for (product in productList) {
+//                Log.i(TAG, "Product $product")
+//            }
+        }
+    }
+
+/*    private fun getProductsList(categoryType: String){
         productsList.clear()
         try {
             // As we have JSON object, so we are getting the object
@@ -451,7 +522,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // adapter instance is set to the recyclerview to inflate the items.
         rvItems.adapter = itemAdapter
         itemAdapter.notifyDataSetChanged()
-    }
+    }*/
 
     private fun showLogoutDialog(){
         val dialog = MaterialDialog(this)
@@ -542,23 +613,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             when (selectedCategory.text) {
                 "Cars" -> {
                     selectedFilter = 2
-                    getProductsList("Cars")
+                    getProductsData("Cars")
                 }
                 "House" -> {
                     selectedFilter = 3
-                    getProductsList("House")
+                    getProductsData("House")
                 }
                 "Land" -> {
                     selectedFilter = 4
-                    getProductsList("Land")
+                    getProductsData("Land")
                 }
                 "Other" -> {
                     selectedFilter = 5
-                    getProductsList("Other")
+                    getProductsData("Other")
                 }
                 "All" -> {
                     selectedFilter = 1
-                    getProductsList("All")
+                    getProductsData("All")
                 }
             }
 
@@ -624,7 +695,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         if (item.itemId == R.id.miGoHome){
             if (selectedFilter != 1){
-                getProductsList("All")
+                getProductsData("All")
             }
         }
         return super.onOptionsItemSelected(item)

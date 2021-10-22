@@ -413,7 +413,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPlate"
-                        app:placeholderText="1300 CC"
+                        app:placeholderText="1300"
                         app:startIconTint="@color/orange_main">
 
                         <AutoCompleteTextView
@@ -421,7 +421,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:inputType="text"
+                            android:inputType="number"
                             android:paddingStart="14dp"
                             android:textSize="16sp"
                             android:textColor="@color/gray_text"
@@ -461,6 +461,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:placeholderText="G+1/Villa/Condominium/etc..."
                         app:startIconTint="@color/orange_main">
 
                         <AutoCompleteTextView
@@ -491,6 +492,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutHouseSize"
+                        app:placeholderText="Jemo1/Gerji/etc.."
                         app:startIconTint="@color/orange_main">
 
                         <AutoCompleteTextView
@@ -521,6 +523,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutHouseType"
+                        app:placeholderText="500"
                         app:startIconTint="@color/orange_main">
 
                         <AutoCompleteTextView
@@ -567,6 +570,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:placeholderText="Jemo1/Gerji/etc.."
                         app:startIconTint="@color/orange_main">
 
                         <AutoCompleteTextView
@@ -597,6 +601,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutLandLocation"
+                        app:placeholderText="500"
                         app:startIconTint="@color/orange_main">
 
                         <AutoCompleteTextView

@@ -3,20 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="net.ykproperties.ykproperties">
 
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage"/>
-
+        tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
@@ -28,6 +27,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.YKProperties">
+        <activity
+            android:name=".FillScreenImageView"
+            android:exported="false" />
         <activity
             android:name=".AddPost"
             android:exported="true"
@@ -77,7 +79,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>

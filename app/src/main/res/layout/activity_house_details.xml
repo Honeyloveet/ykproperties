@@ -26,169 +26,176 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBarDetails" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvProductDetails"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBarDetails">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="5dp" >
-
-            <ImageView
-                android:id="@+id/ivProductDetail"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:contentDescription="@string/product_images"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-            <TextView
-                android:id="@+id/tvSeenProductDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="12"
-                android:textColor="@color/gray_text"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/view2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivProductDetail" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/view2"
-                app:layout_constraintEnd_toStartOf="@+id/tvSeenProductDetails"
-                app:layout_constraintTop_toBottomOf="@+id/ivProductDetail"
-                app:srcCompat="@drawable/ic_seen" />
-
-            <TextView
-                android:id="@+id/tvTitleProductDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="sans-serif-black"
-                android:text="@string/product_title_sample"
-                android:textColor="@color/gray_text"
-                android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivProductDetail" />
-
-            <TextView
-                android:id="@+id/tvPostedDateProductDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Posted 10 minutes ago"
-                android:textColor="@color/gray_text"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/view3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view2" />
-
-            <TextView
-                android:id="@+id/tvPriceProductDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="5dp"
-                android:text="Br 200,280,800"
-                android:textColor="@color/orange_main"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view2"
-                tools:ignore="TextContrastCheck" />
-
-            <View
-                android:id="@+id/view2"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="#DADADA"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitleProductDetails" />
-
-            <View
-                android:id="@+id/view3"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="#DADADA"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPriceProductDetails" />
-
-            <TextView
-                android:id="@+id/tvHouseType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/custom_rating_background"
-                android:elevation="4dp"
-                android:paddingStart="15dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="4dp"
-                android:text="G+2"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view3"
-                tools:ignore="TextContrastCheck" />
-
-            <TextView
-                android:id="@+id/tvRatingText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Very Good"
-                android:textColor="@color/gray_text"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvHouseType"
-                app:layout_constraintTop_toBottomOf="@+id/view3"
-                tools:visibility="invisible" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cvProductDetails">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvProductDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingTop="5dp" >
+
+                    <com.denzcoskun.imageslider.ImageSlider
+                        android:id="@+id/ivProductDetail"
+                        android:layout_width="0dp"
+                        android:layout_height="200dp"
+                        android:contentDescription="@string/product_images"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        app:iss_auto_cycle="false"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvSeenProductDetails"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="12"
+                        android:textColor="@color/gray_text"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toTopOf="@+id/view2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/ivProductDetail" />
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/view2"
+                        app:layout_constraintEnd_toStartOf="@+id/tvSeenProductDetails"
+                        app:layout_constraintTop_toBottomOf="@+id/ivProductDetail"
+                        app:srcCompat="@drawable/ic_seen" />
+
+                    <TextView
+                        android:id="@+id/tvTitleProductDetails"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/product_title_sample"
+                        android:textColor="@color/gray_text"
+                        android:textSize="18sp"
+                        app:layout_constraintEnd_toStartOf="@+id/imageView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/ivProductDetail" />
+
+                    <TextView
+                        android:id="@+id/tvPostedDateProductDetails"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="Posted 10 minutes ago"
+                        android:textColor="@color/gray_text"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toTopOf="@+id/view3"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/view2" />
+
+                    <TextView
+                        android:id="@+id/tvPriceProductDetails"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Br 200,280,800"
+                        android:textColor="@color/orange_main"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/view2"
+                        tools:ignore="TextContrastCheck" />
+
+                    <View
+                        android:id="@+id/view2"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="#DADADA"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTitleProductDetails" />
+
+                    <View
+                        android:id="@+id/view3"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="#DADADA"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvPriceProductDetails" />
+
+                    <TextView
+                        android:id="@+id/tvHouseForSaleOr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/custom_rating_background"
+                        android:elevation="4dp"
+                        android:paddingStart="15dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="15dp"
+                        android:paddingBottom="4dp"
+                        android:text="For Sale"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/view3"
+                        tools:ignore="TextContrastCheck" />
+
+                    <TextView
+                        android:id="@+id/tvHouseOwnerOr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/custom_rating_background"
+                        android:elevation="4dp"
+                        android:paddingStart="15dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="15dp"
+                        android:paddingBottom="4dp"
+                        android:text="Broker"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/view3"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:ignore="TextContrastCheck" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -201,27 +208,27 @@
                     android:paddingBottom="8dp">
 
                     <TextView
-                        android:id="@+id/tvLocationTitleDetails"
+                        android:id="@+id/tvHouseTypeTitleDetails"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:text="Location"
+                        android:text="House type"
                         android:textColor="@color/gray_text"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/tvLocationDetails"
+                        android:id="@+id/tvHouseTypeDetails"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:text="Jemo 1"
+                        android:text="G+1"
                         android:textColor="@color/orange_main"
                         android:textSize="16sp"
-                        app:layout_constraintStart_toEndOf="@+id/tvLocationTitleDetails"
+                        app:layout_constraintStart_toEndOf="@+id/tvHouseTypeTitleDetails"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
@@ -234,7 +241,7 @@
                         android:textColor="@color/gray_text"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvLocationTitleDetails" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvHouseTypeTitleDetails" />
 
                     <TextView
                         android:id="@+id/tvSizeDetails"
@@ -246,31 +253,7 @@
                         android:textColor="@color/orange_main"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/tvSizeTitleDetails"
-                        app:layout_constraintTop_toBottomOf="@+id/tvLocationDetails" />
-
-                    <TextView
-                        android:id="@+id/tvBedRoomTitleDetails"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:text="Bed Room"
-                        android:textColor="@color/gray_text"
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@+id/tvFuelDetails"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tvFuelDetails"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:text="3"
-                        android:textColor="@color/orange_main"
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvHouseTypeDetails" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -295,7 +278,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:paddingBottom="5dp"
-                        android:text="Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description"
+                        android:text="Description"
                         android:textColor="@color/gray_text"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -336,33 +319,34 @@
 
         <Button
             android:id="@+id/btnCallSeller"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/orange_main"
+            android:text="call"
+            android:textColor="@color/white"
+            android:textAlignment="viewStart"
+            app:iconPadding="40dp"
+            app:icon="@drawable/ic_call" />
+
+        <Button
+            android:id="@+id/btnMessageSeller"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
             android:layout_weight="1"
-            android:text="Call"
+            android:text="Message"
             android:textAlignment="viewStart"
             android:textColor="@color/orange_main"
-            app:icon="@drawable/ic_call"
+            app:icon="@drawable/ic_message_user"
             app:iconPadding="40dp"
             app:iconTint="@color/orange_main"
             app:strokeColor="@color/orange_main"
             app:strokeWidth="2dp" />
 
-        <Button
-            android:id="@+id/btnMessageSeller"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginEnd="2dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/orange_main"
-            android:text="Message"
-            android:textColor="@color/white"
-            android:textAlignment="viewStart"
-            app:iconPadding="40dp"
-            app:icon="@drawable/ic_message_user" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
