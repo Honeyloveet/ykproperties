@@ -1,9 +1,12 @@
 package net.ykproperties.ykproperties
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -11,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -28,8 +32,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.default
@@ -38,8 +40,9 @@ import id.zelory.compressor.loadBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.ykproperties.ykproperties.Model.ProductsModel
+import net.ykproperties.ykproperties.model.ProductsModel
 import net.ykproperties.ykproperties.util.ConnectionLiveData
+import net.ykproperties.ykproperties.util.RequestPermissions
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -47,11 +50,16 @@ import kotlin.Exception
 import kotlin.collections.ArrayList
 
 //private const val PICK_PHOTO_CODE = 6410
-private const val TAG = "HONEY"
 
 class AddPost : AppCompatActivity() {
 
-//    private val easyPermissionManager = EasyPermissionManager(this)
+    private companion object {
+        private const val TAG = "AddPostActivity"
+    }
+
+    private lateinit var requestPermissions: RequestPermissions
+
+    //    private val easyPermissionManager = EasyPermissionManager(this)
     private lateinit var networkConnectionStatus: ConnectionLiveData
 
 //    private var photoUriOne: Uri? = null
@@ -63,8 +71,9 @@ class AddPost : AppCompatActivity() {
     private lateinit var progressDialog: AlertDialog
 
     // Create a storage reference from our app
-    private lateinit var storage: FirebaseStorage
-    private lateinit var storageRef: StorageReference
+//    private lateinit var storage: FirebaseStorage
+//    private lateinit var storageRef: StorageReference
+    private val storageRef = Firebase.storage.reference
 
     private lateinit var addPostLayout: ConstraintLayout
 
@@ -149,14 +158,16 @@ class AddPost : AppCompatActivity() {
             val isSavedSuccessfully = savePhotoToInternalStorage(uuidImageOneName, actualImageFileOne, 1)
             if (isSavedSuccessfully) {
 
-                imageFileOneToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),"$uuidImageOneName.jpg")
-                Toast.makeText(this,"${imageFileOneToUpload!!.toUri()}",Toast.LENGTH_SHORT).show()
-                imageOneUriToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),"$uuidImageOneName.jpg").toUri()
-                ivPhoto1.setImageBitmap(imageOneBmp)
                 if (pictureOneSelected) {
                     imagesUriToUpload.remove(imageOneUriToUpload)
 //                    imagesUriString.remove(imageOneUriToUpload.toString())
                 }
+
+                imageFileOneToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),"$uuidImageOneName.jpg")
+                Toast.makeText(this,"${imageFileOneToUpload!!.toUri()}",Toast.LENGTH_SHORT).show()
+                imageOneUriToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),"$uuidImageOneName.jpg").toUri()
+                ivPhoto1.setImageBitmap(imageOneBmp)
+
                 imagesUriToUpload.add(imageOneUriToUpload)
 //                imagesUriString.add(imageOneUriToUpload.toString())
                 pictureOneSelected = true
@@ -172,13 +183,16 @@ class AddPost : AppCompatActivity() {
             }
             val isSavedSuccessfully = savePhotoToInternalStorage(uuidImageTwoName, actualImageFileTwo, 2)
             if (isSavedSuccessfully) {
-                imageFileTwoToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$uuidImageTwoName.jpg")
-                imageTwoUriToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$uuidImageTwoName.jpg").toUri()
-                ivPhoto2.setImageBitmap(imageTwoBmp)
+
                 if (pictureTwoSelected) {
                     imagesUriToUpload.remove(imageTwoUriToUpload)
 //                    imagesUriString.remove(imageTwoUriToUpload.toString())
                 }
+
+                imageFileTwoToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$uuidImageTwoName.jpg")
+                imageTwoUriToUpload = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$uuidImageTwoName.jpg").toUri()
+                ivPhoto2.setImageBitmap(imageTwoBmp)
+
                 imagesUriToUpload.add(imageTwoUriToUpload)
 //                imagesUriString.add(imageTwoUriToUpload.toString())
                 pictureTwoSelected = true
@@ -195,20 +209,23 @@ class AddPost : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_add_post)
 
         addPostLayout = findViewById(R.id.addPostLayout)
 
         networkConnectionStatus = ConnectionLiveData(applicationContext)
-        checkInternetConnectionStatus()
+
+        requestPermissions = RequestPermissions(this, this)
 
         auth = Firebase.auth
 
-        storage = Firebase.storage
+//        storage = Firebase.storage
 
-        storageRef = storage.reference
+//        storageRef = storage.reference
 
         btnAddPost = findViewById(R.id.btnAddPost)
 
@@ -274,6 +291,10 @@ class AddPost : AppCompatActivity() {
 
         setupCustomProgressDialog()
 
+        checkPermissions()
+
+        checkInternetConnectionStatus()
+
         deleteImagesFile()
 
         val ownerOrSeller = resources.getStringArray(R.array.seller)
@@ -338,208 +359,41 @@ class AddPost : AppCompatActivity() {
                     progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
                     uploadProducts()
                 }
-
-//                val currentUser = auth.currentUser
-                /*if (pictureOneSelected && pictureTwoSelected) {
-
-                } else if (pictureOneSelected) {
-                    val uid = UUID.randomUUID().toString()
-                    val photoOneRef = storageRef.child("images/${System.currentTimeMillis()}-photo.jpg")
-                    photoOneRef.putFile(imageOneUriToUpload)
-                        .continueWithTask { photoUploadTask ->
-                            photoOneRef.downloadUrl
-                        }.continueWithTask { photoUrl ->
-                            val selectedCategory = getSelectedCategory(autoComTvCategories.text.toString())
-
-                            if (selectedCategory == "Other") {
-                                val itemToPost = ProductsModel(
-                                    uid,
-                                    autoComTvOtherTitle.text.toString(),
-                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
-                                    "",
-                                    "",
-                                    0,
-                                    0,
-                                    "Other",
-                                    "",
-                                    "",
-                                    etCommonDesc.text.toString(),
-                                    0,
-                                    "",
-                                    "",
-                                    "",
-                                    0,
-                                    "",
-                                    0,
-                                    autoComTvCommonPhone.text.toString().toLong(),
-                                    imagesUriString,
-                                    "",
-                                    FieldValue.serverTimestamp(),
-                                    autoComTvCommonSaleOr.text.toString(),
-                                    false,
-                                    0,
-                                    autoComTvCommonOwnerOr.text.toString(),
-                                    0,
-                                    "",
-                                    FieldValue.serverTimestamp(),
-                                    currentUser!!.uid,
-                                    0,
-                                    0)
-                                val s = etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong()
-                                Toast.makeText(this, "Price = $s Birr", Toast.LENGTH_SHORT).show()
-                                db.collection("products").document(uid)
-                                    .set(itemToPost, SetOptions.merge())
-                                    .addOnCompleteListener { postCreationTask ->
-                                        if (!postCreationTask.isSuccessful){
-                                            Log.e(TAG, "Error writing document", postCreationTask.exception)
-                                            Toast.makeText(this, "POST Failed!!!", Toast.LENGTH_SHORT).show()
-                                        }
-                                        btnAddPost.isEnabled = true
-                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
-                                        pictureOneSelected = false
-                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.w(TAG, "Error writing document", e) }
-                            } else if (selectedCategory == "Land") {
-                                val itemToPost = ProductsModel(
-                                    uid,
-                                    "",
-                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
-                                    "",
-                                    "",
-                                    0,
-                                    0,
-                                    "Land",
-                                    "",
-                                    "",
-                                    etCommonDesc.text.toString(),
-                                    0,
-                                    "",
-                                    "",
-                                    "",
-                                    0,
-                                    autoComTvLandLocation.text.toString(),
-                                    0,
-                                    autoComTvCommonPhone.text.toString().toLong(),
-                                    imagesUriString,
-                                    "",
-                                    FieldValue.serverTimestamp(),
-                                    autoComTvCommonSaleOr.text.toString(),
-                                    false,
-                                    0,
-                                    autoComTvCommonOwnerOr.text.toString(),
-                                    autoComTvLandSize.text.toString().toLong(),
-                                    "",
-                                    FieldValue.serverTimestamp(),
-                                    currentUser!!.uid,
-                                    0,
-                                    0)
-                                db.collection("products").add(itemToPost)
-                                    .addOnCompleteListener {
-                                        btnAddPost.isEnabled = true
-                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
-                                        pictureOneSelected = false
-                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
-                                    }
-                            } else if (selectedCategory == "House") {
-                                val itemToPost = ProductsModel(
-                                    uid,
-                                    "",
-                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
-                                    "",
-                                    "",
-                                    0,
-                                    0,
-                                    "House",
-                                    "",
-                                    "",
-                                    etCommonDesc.text.toString(),
-                                    0,
-                                    "",
-                                    autoComTvHouseType.text.toString(),
-                                    "",
-                                    0,
-                                    autoComTvHouseLocation.text.toString(),
-                                    0,
-                                    autoComTvCommonPhone.text.toString().toLong(),
-                                    imagesUriString,
-                                    "",
-                                    FieldValue.serverTimestamp(),
-                                    autoComTvCommonSaleOr.text.toString(),
-                                    false,
-                                    0,
-                                    autoComTvCommonOwnerOr.text.toString(),
-                                    autoComTvHouseSize.text.toString().toLong(),
-                                    "",
-                                    FieldValue.serverTimestamp(),
-                                    currentUser!!.uid,
-                                    0,
-                                    0)
-                                db.collection("products").add(itemToPost)
-                                    .addOnCompleteListener {
-                                        btnAddPost.isEnabled = true
-                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
-                                        pictureOneSelected = false
-                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
-                                    }
-                            } else if (selectedCategory == "Cars") {
-                                val itemToPost = ProductsModel(
-                                    uid,
-                                    "",
-                                    etCommonPrice.text.toString().filter { it.isDigit() || it == '.' }.toLong(),
-                                    autoComTvMake.text.toString(),
-                                    autoComTvModel.text.toString(),
-                                    0,
-                                    0,
-                                    "Cars",
-                                    autoComTvColor.text.toString(),
-                                    autoComTvCondition.text.toString(),
-                                    etCommonDesc.text.toString(),
-                                    autoComTvEngineSize.text.toString().toLong(),
-                                    autoComTvFuel.text.toString(),
-                                    autoComTvHouseType.text.toString(),
-                                    "",
-                                    0,
-                                    "",
-                                    0,
-                                    autoComTvCommonPhone.text.toString().toLong(),
-                                    imagesUriString,
-                                    autoComTvPlate.text.toString(),
-                                    FieldValue.serverTimestamp(),
-                                    autoComTvCommonSaleOr.text.toString(),
-                                    false,
-                                    0,
-                                    autoComTvCommonOwnerOr.text.toString(),
-                                    0,
-                                    autoComTvTransmission.text.toString(),
-                                    FieldValue.serverTimestamp(),
-                                    currentUser!!.uid,
-                                    0,
-                                    autoComTvYear.text.toString().toLong())
-                                db.collection("products").add(itemToPost)
-                                    .addOnCompleteListener {
-                                        btnAddPost.isEnabled = true
-                                        ivPhoto1.setImageResource(R.drawable.ic_add_photo)
-                                        pictureOneSelected = false
-                                        Toast.makeText(this, "POST SUCCESSFUL!!!", Toast.LENGTH_SHORT).show()
-                                    }
-                            } else return@continueWithTask null
-
-                        }
-                } else if (pictureTwoSelected) {
-                    val photoOneRef = storageRef.child("images/${System.currentTimeMillis()}-photo.jpg")
-                    photoOneRef.putFile(imageOneUriToUpload)
-                        .addOnSuccessListener {
-                            btnAddPost.isEnabled = true
-                            ivPhoto1.setImageResource(R.drawable.ic_add_photo)
-                            pictureTwoSelected = false
-                            Toast.makeText(this,"Image upload successful!!",Toast.LENGTH_SHORT).show()
-                        }
-                }*/
             }
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        checkInternetConnectionStatus()
+    }
+
+    private fun checkPermissions() {
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            if (!requestPermissions.hasWriteExternalStoragePermission()) {
+                requestPermissions.requestReadWritePermissions()
+            }
+        } else {
+            if (!requestPermissions.hasReadExternalStoragePermission()) {
+                requestPermissions.requestReadWritePermissions()
+            }
+        }
+
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            if (!requestPermissions.hasWriteExternalStoragePermission() || !requestPermissions.hasReadExternalStoragePermission()) {
+                showPermissionDeniedDialog()
+            }
+        } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            if (!requestPermissions.hasReadExternalStoragePermission()) {
+                showPermissionDeniedDialog()
+            }
+        }
     }
 
     private fun checkInternetConnectionStatus() {
@@ -560,6 +414,29 @@ class AddPost : AppCompatActivity() {
         })
     }
 
+    private fun showPermissionDeniedDialog() {
+
+        val dialog = MaterialDialog(this)
+            .noAutoDismiss()
+            .cancelable(false)
+            .cancelOnTouchOutside(false)
+            .cornerRadius(14f)
+            .customView(R.layout.permission_denied_layout)
+
+        dialog.findViewById<Button>(R.id.btnYes).setOnClickListener {
+            dialog.dismiss()
+            checkPermissions()
+        }
+
+        dialog.findViewById<Button>(R.id.btnNo).setOnClickListener {
+            dialog.dismiss()
+            finish()
+        }
+
+        dialog.show()
+
+    }
+
     private fun setupCustomProgressDialog() {
         val alertView = View.inflate(this@AddPost, R.layout.custom_progress_bar,null)
 
@@ -574,6 +451,7 @@ class AddPost : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun productUploadSuccessOrFailedDialog(uploadSuccess: Boolean) {
         if (uploadSuccess) {
             val dialog = MaterialDialog(this)
@@ -620,6 +498,7 @@ class AddPost : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun uploadImages() {
         var imageUploadCount = 0
         for (image in imagesUriToUpload) {
@@ -636,7 +515,7 @@ class AddPost : AppCompatActivity() {
                             }
                         }
                         .addOnFailureListener {
-                            TODO("Finish image upload failed with dialog box")
+                            Log.e(TAG,"Failed to upload ${imagesUriToUpload.size - imageUploadCount} out of ${imagesUriToUpload.size}")
                         }
                 }
         }
@@ -679,7 +558,8 @@ class AddPost : AppCompatActivity() {
                     "",
                     currentUser!!.uid,
                     0,
-                    0)
+                    0,
+                false)
                 db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
                     .addOnSuccessListener {
                         btnAddPost.isEnabled = true
@@ -725,7 +605,8 @@ class AddPost : AppCompatActivity() {
                     "",
                     currentUser!!.uid,
                     0,
-                    0)
+                    0,
+                false)
                 db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
                     .addOnSuccessListener {
                         btnAddPost.isEnabled = true
@@ -771,7 +652,8 @@ class AddPost : AppCompatActivity() {
                     "",
                     currentUser!!.uid,
                     0,
-                    0)
+                    0,
+                false)
                 db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
                     .addOnSuccessListener {
                         btnAddPost.isEnabled = true
@@ -817,7 +699,8 @@ class AddPost : AppCompatActivity() {
                     autoComTvTransmission.text.toString(),
                     currentUser!!.uid,
                     0,
-                    autoComTvYear.text.toString().toLong())
+                    autoComTvYear.text.toString().toLong(),
+                false)
                 db.collection("products").document(uid).set(itemToPost, SetOptions.merge())
                     .addOnSuccessListener {
                         btnAddPost.isEnabled = true

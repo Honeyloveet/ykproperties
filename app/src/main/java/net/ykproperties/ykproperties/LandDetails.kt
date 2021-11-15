@@ -1,6 +1,8 @@
 package net.ykproperties.ykproperties
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -9,6 +11,7 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
@@ -33,6 +36,8 @@ class LandDetails : AppCompatActivity() {
 
     lateinit var toolbar: Toolbar
 
+    private lateinit var progressDialog: AlertDialog
+
     private lateinit var btnCallSeller: Button
     private lateinit var btnMessageSeller: Button
 
@@ -47,6 +52,7 @@ class LandDetails : AppCompatActivity() {
     private lateinit var tvPostedDateProductDetails: TextView
     private lateinit var tvLandForSaleOr: TextView
     private lateinit var tvLandOwnerOr: TextView
+    private lateinit var tvLandDetailStatus: TextView
 
     private lateinit var auth: FirebaseAuth
 
@@ -64,6 +70,8 @@ class LandDetails : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolBarDetails)
 
+        setupCustomProgressDialog()
+
         btnCallSeller = findViewById(R.id.btnCallSeller)
         btnMessageSeller = findViewById(R.id.btnMessageSeller)
 
@@ -78,6 +86,12 @@ class LandDetails : AppCompatActivity() {
         tvPostedDateProductDetails = findViewById(R.id.tvPostedDateProductDetails)
         tvLandForSaleOr = findViewById(R.id.tvLandForSaleOr)
         tvLandOwnerOr = findViewById(R.id.tvLandOwnerOr)
+        tvLandDetailStatus = findViewById(R.id.tvLandDetailStatus)
+
+        progressDialog.show()
+        progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+        progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Loading..."
+        progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
 
         val bundle : Bundle? = intent.extras
         val id = bundle!!.getString("id")
@@ -93,6 +107,19 @@ class LandDetails : AppCompatActivity() {
         val phone = bundle.getLong("phone")
         val seller = bundle.getString("seller")
         val userPosted = bundle.getString("userPosted")
+        val sold = bundle.getBoolean("sold")
+
+        db.collection("products")
+            .document("$id")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                tvSeenProductDetails.text = documentSnapshot.get("views").toString()
+                progressDialog.dismiss()
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error Getting document", e)
+                progressDialog.dismiss()
+            }
 
         sellerPhone = phone
 
@@ -116,10 +143,16 @@ class LandDetails : AppCompatActivity() {
         tvSizeDetails.text = "$size Square Meter"
         tvLandForSaleOr.text = purpose
         tvLandOwnerOr.text = seller
-        tvSeenProductDetails.text = views.toString()
         tvPostedDateProductDetails.text = DateUtils.getRelativeTimeSpanString(posted)
 
         ivProductDetail.setImageList(imageList)
+
+        if (sold) {
+            tvLandDetailStatus.visibility = View.VISIBLE
+            tvLandDetailStatus.bringToFront()
+        } else {
+            tvLandDetailStatus.visibility = View.GONE
+        }
 
         db.collection("products").document("$id")
             .update("views", FieldValue.increment(1))
@@ -166,18 +199,52 @@ class LandDetails : AppCompatActivity() {
 
     }
 
+    private fun setupCustomProgressDialog() {
+        val alertView = View.inflate(this@LandDetails, R.layout.custom_progress_bar,null)
+
+        val alertBuilder = AlertDialog.Builder(this@LandDetails)
+        alertBuilder.setView(alertView)
+        alertBuilder.setCancelable(false)
+        progressDialog = alertBuilder.create()
+        progressDialog.setCanceledOnTouchOutside(false)
+    }
+
     private fun smsSeller() {
-        val smsIntent = Intent(Intent.ACTION_VIEW)
-        smsIntent.data = Uri.parse("smsto:")
-        smsIntent.type = "vnd.android-dir/mms-sms"
-        smsIntent.putExtra("address", "0$sellerPhone")
-        startActivity(smsIntent)
+//        val smsIntent = Intent(Intent.ACTION_VIEW)
+//        smsIntent.data = Uri.parse("smsto:")
+//        smsIntent.type = "vnd.android-dir/mms-sms"
+//        smsIntent.putExtra("address", "0$sellerPhone")
+//        startActivity(smsIntent)
+
+        val smsIntent = Intent().apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse("smsto:")
+            putExtra("address", "0$sellerPhone")
+            type = "vnd.android-dir/mms-sms"
+        }
+
+        try {
+            startActivity(smsIntent)
+        } catch (e: ActivityNotFoundException) {
+            Log.d(TAG, "Sms Activity Not Found: $e")
+        }
+
     }
 
     private fun callSeller() {
-        val callIntent = Intent(Intent.ACTION_DIAL)
-        callIntent.data = Uri.parse("tel:0$sellerPhone")
-        startActivity(callIntent)
+//        val callIntent = Intent(Intent.ACTION_DIAL)
+//        callIntent.data = Uri.parse("tel:0$sellerPhone")
+//        startActivity(callIntent)
+
+        val callIntent = Intent().apply {
+            action = Intent.ACTION_DIAL
+            data = Uri.parse("tel:0$sellerPhone")
+        }
+        try {
+            startActivity(callIntent)
+        } catch (e: ActivityNotFoundException) {
+            Log.d(TAG, "Call Activity Not Found: $e")
+        }
     }
 
     private fun requestSmsPermissions() {

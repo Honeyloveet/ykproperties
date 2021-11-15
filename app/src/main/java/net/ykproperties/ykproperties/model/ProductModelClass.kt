@@ -1,6 +1,4 @@
-package net.ykproperties.ykproperties.Model
-
-import java.util.*
+package net.ykproperties.ykproperties.model
 
 class ProductModelClass (
     val id: Int,

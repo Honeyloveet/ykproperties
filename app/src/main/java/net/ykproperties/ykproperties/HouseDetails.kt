@@ -1,6 +1,8 @@
 package net.ykproperties.ykproperties
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -9,6 +11,7 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
@@ -32,6 +35,8 @@ class HouseDetails : AppCompatActivity() {
 
     lateinit var toolbar: Toolbar
 
+    private lateinit var progressDialog: AlertDialog
+
     private lateinit var btnCallSeller: Button
     private lateinit var btnMessageSeller: Button
 
@@ -46,6 +51,7 @@ class HouseDetails : AppCompatActivity() {
     private lateinit var tvSeenProductDetails: TextView
     private lateinit var tvHouseTypeDetails: TextView
     private lateinit var tvHouseOwnerOr: TextView
+    private lateinit var tvHouseDetailStatus: TextView
 
     private lateinit var auth: FirebaseAuth
 
@@ -63,6 +69,8 @@ class HouseDetails : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolBarDetails)
 
+        setupCustomProgressDialog()
+
         btnCallSeller = findViewById(R.id.btnCallSeller)
         btnMessageSeller = findViewById(R.id.btnMessageSeller)
 
@@ -77,6 +85,12 @@ class HouseDetails : AppCompatActivity() {
         tvSeenProductDetails = findViewById(R.id.tvSeenProductDetails)
         tvHouseTypeDetails = findViewById(R.id.tvHouseTypeDetails)
         tvHouseOwnerOr = findViewById(R.id.tvHouseOwnerOr)
+        tvHouseDetailStatus = findViewById(R.id.tvHouseDetailStatus)
+
+        progressDialog.show()
+        progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+        progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Loading..."
+        progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
 
         val bundle : Bundle? = intent.extras
         val id = bundle!!.getString("id")
@@ -93,6 +107,19 @@ class HouseDetails : AppCompatActivity() {
         val seller = bundle.getString("seller")
         val userPosted = bundle.getString("userPosted")
         val phone = bundle.getLong("phone")
+        val sold = bundle.getBoolean("sold")
+
+        db.collection("products")
+            .document("$id")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                tvSeenProductDetails.text = documentSnapshot.get("views").toString()
+                progressDialog.dismiss()
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error Getting document", e)
+                progressDialog.dismiss()
+            }
 
         sellerPhone = phone
 
@@ -120,6 +147,13 @@ class HouseDetails : AppCompatActivity() {
         tvSeenProductDetails.text = views.toString()
 
         ivProductDetail.setImageList(imageList)
+
+        if (sold) {
+            tvHouseDetailStatus.visibility = View.VISIBLE
+            tvHouseDetailStatus.bringToFront()
+        } else {
+            tvHouseDetailStatus.visibility = View.GONE
+        }
 
         db.collection("products").document("$id")
             .update("views", FieldValue.increment(1))
@@ -166,18 +200,51 @@ class HouseDetails : AppCompatActivity() {
 
     }
 
+    private fun setupCustomProgressDialog() {
+        val alertView = View.inflate(this, R.layout.custom_progress_bar,null)
+
+        val alertBuilder = AlertDialog.Builder(this)
+        alertBuilder.setView(alertView)
+        alertBuilder.setCancelable(false)
+        progressDialog = alertBuilder.create()
+        progressDialog.setCanceledOnTouchOutside(false)
+    }
+
     private fun smsSeller() {
-        val smsIntent = Intent(Intent.ACTION_VIEW)
-        smsIntent.data = Uri.parse("smsto:")
-        smsIntent.type = "vnd.android-dir/mms-sms"
-        smsIntent.putExtra("address", "0$sellerPhone")
-        startActivity(smsIntent)
+//        val smsIntent = Intent(Intent.ACTION_VIEW)
+//        smsIntent.data = Uri.parse("smsto:")
+//        smsIntent.type = "vnd.android-dir/mms-sms"
+//        smsIntent.putExtra("address", "0$sellerPhone")
+//        startActivity(smsIntent)
+
+        val smaIntent = Intent().apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse("smsto:")
+            putExtra("address", "0$sellerPhone")
+            type = "vnd.android-dir/mms-sms"
+        }
+
+        try {
+            startActivity(smaIntent)
+        } catch (e: ActivityNotFoundException) {
+            Log.d(TAG, "Sms Activity Not Found: $e")
+        }
     }
 
     private fun callSeller() {
-        val callIntent = Intent(Intent.ACTION_DIAL)
-        callIntent.data = Uri.parse("tel:0$sellerPhone")
-        startActivity(callIntent)
+//        val callIntent = Intent(Intent.ACTION_DIAL)
+//        callIntent.data = Uri.parse("tel:0$sellerPhone")
+//        startActivity(callIntent)
+
+        val callIntent = Intent().apply {
+            action = Intent.ACTION_DIAL
+            data = Uri.parse("tel:0$sellerPhone")
+        }
+        try {
+            startActivity(callIntent)
+        } catch (e: ActivityNotFoundException) {
+            Log.d(TAG, "Call Activity Not Found: $e")
+        }
     }
 
     private fun requestSmsPermissions() {

@@ -28,6 +28,7 @@
 
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="none"
@@ -47,12 +48,32 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp" >
+                android:layout_marginEnd="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingTop="5dp" >
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:id="@+id/tvCarDetailStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:rotation="-20"
+                        android:shadowColor="@color/white"
+                        android:shadowDx="5"
+                        android:shadowDy="5"
+                        android:shadowRadius="5"
+                        android:text="SOLD"
+                        android:textColor="@color/red"
+                        android:textSize="50sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/ivProductDetail"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/ivProductDetail" />
 
                     <com.denzcoskun.imageslider.ImageSlider
                         android:id="@+id/ivProductDetail"
@@ -64,14 +85,16 @@
                         app:iss_auto_cycle="false"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    </com.denzcoskun.imageslider.ImageSlider>
 
                     <TextView
                         android:id="@+id/tvSeenProductDetails"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:text="12"
+                        android:text=" "
                         android:textColor="@color/gray_text"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toTopOf="@+id/view2"

@@ -1,6 +1,8 @@
 package net.ykproperties.ykproperties
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -9,6 +11,7 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
@@ -23,6 +26,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import net.ykproperties.ykproperties.util.RequestPermissions
 import java.text.NumberFormat
 import java.util.*
 
@@ -33,6 +37,10 @@ class CarDetails : AppCompatActivity() {
     }
 
     lateinit var toolbar: Toolbar
+
+    private lateinit var requestPermissions: RequestPermissions
+
+    private lateinit var progressDialog: AlertDialog
 
     private lateinit var btnCallSeller: Button
     private lateinit var btnMessageSeller: Button
@@ -54,6 +62,7 @@ class CarDetails : AppCompatActivity() {
     private lateinit var tvKmTitleDetails: TextView
     private lateinit var tvPostedDateProductDetails: TextView
     private lateinit var tvCarOwnerOr: TextView
+    private lateinit var tvCarDetailStatus: TextView
 
     private lateinit var auth: FirebaseAuth
 
@@ -67,11 +76,15 @@ class CarDetails : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_car_details)
 
+        requestPermissions = RequestPermissions(this, this)
+
         val imageList = ArrayList<SlideModel>()
 
         toolbar = findViewById(R.id.toolBarDetails)
 
         auth = Firebase.auth
+
+        setupCustomProgressDialog()
 
         btnCallSeller = findViewById(R.id.btnCallSeller)
         btnMessageSeller = findViewById(R.id.btnMessageSeller)
@@ -93,6 +106,12 @@ class CarDetails : AppCompatActivity() {
         tvKmTitleDetails = findViewById(R.id.tvKmTitleDetails)
         tvPostedDateProductDetails = findViewById(R.id.tvPostedDateProductDetails)
         tvCarOwnerOr = findViewById(R.id.tvCarOwnerOr)
+        tvCarDetailStatus = findViewById(R.id.tvCarDetailStatus)
+
+        progressDialog.show()
+        progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+        progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Loading..."
+        progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
 
         val bundle : Bundle? = intent.extras
         val id = bundle!!.getString("id")
@@ -116,6 +135,19 @@ class CarDetails : AppCompatActivity() {
         val plate = bundle.getString("plate")
         val mileage = bundle.getLong("mileage")
         val userPosted = bundle.getString("plate")
+        val sold = bundle.getBoolean("sold")
+
+        db.collection("products")
+            .document("$id")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                tvSeenProductDetails.text = documentSnapshot.get("views").toString()
+                progressDialog.dismiss()
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error Getting document", e)
+                progressDialog.dismiss()
+            }
 
         sellerPhone = phone
 
@@ -141,10 +173,16 @@ class CarDetails : AppCompatActivity() {
         tvColorDetails.text = color
         tvCarForSaleOr.text = purpose
         tvCarOwnerOr.text = seller
-        tvSeenProductDetails.text = views.toString()
         tvPostedDateProductDetails.text = DateUtils.getRelativeTimeSpanString(posted)
 
         ivProductDetail.setImageList(imageList)
+
+        if (sold) {
+            tvCarDetailStatus.visibility = View.VISIBLE
+            tvCarDetailStatus.bringToFront()
+        } else {
+            tvCarDetailStatus.visibility = View.GONE
+        }
 
         if (mileage == 0L) {
             tvKmTitleDetails.isVisible = false
@@ -154,7 +192,7 @@ class CarDetails : AppCompatActivity() {
         if (plate == "") {
             tvPlateNoTitleDetails.isVisible = false
             tvPlateNoDetails.isVisible = false
-//            tvPlateNoDetails.setTextColor(getColor(R.color.white))
+            tvPlateNoDetails.setTextColor(getColor(R.color.white))
 //            tvPlateNoTitleDetails.setTextColor(getColor(R.color.white))
         }
 
@@ -186,16 +224,16 @@ class CarDetails : AppCompatActivity() {
         })
 
         btnCallSeller.setOnClickListener {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                requestCallPermissions()
+            if (!requestPermissions.hasCallPermission()) {
+                requestPermissions.requestCallPermissions()
             } else {
                 callSeller()
             }
         }
 
         btnMessageSeller.setOnClickListener {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                requestSmsPermissions()
+            if (!requestPermissions.hasSmsPermission()) {
+                requestPermissions.requestSmsPermissions()
             } else {
                 smsSeller()
             }
@@ -203,26 +241,53 @@ class CarDetails : AppCompatActivity() {
 
     }
 
+    private fun setupCustomProgressDialog() {
+        val alertView = View.inflate(this@CarDetails,
+            R.layout.custom_progress_bar,null)
+
+        val alertBuilder = AlertDialog.Builder(this@CarDetails)
+        alertBuilder.setView(alertView)
+        alertBuilder.setCancelable(false)
+        progressDialog = alertBuilder.create()
+        progressDialog.setCanceledOnTouchOutside(false)
+    }
+
     private fun smsSeller() {
-        val smsIntent = Intent(Intent.ACTION_VIEW)
-        smsIntent.data = Uri.parse("smsto:")
-        smsIntent.type = "vnd.android-dir/mms-sms"
-        smsIntent.putExtra("address", "0$sellerPhone")
-        startActivity(smsIntent)
+//        val smsIntent = Intent(Intent.ACTION_VIEW)
+//        smsIntent.data = Uri.parse("smsto:")
+//        smsIntent.type = "vnd.android-dir/mms-sms"
+//        smsIntent.putExtra("address", "0$sellerPhone")
+//        startActivity(smsIntent)
+
+        val smsIntent = Intent().apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse("smsto:")
+            putExtra("address", "0$sellerPhone")
+            type = "vnd.android-dir/mms-sms"
+        }
+
+        try {
+            startActivity(smsIntent)
+        } catch (e: ActivityNotFoundException) {
+            Log.d(TAG, "Sms Activity Not Found: $e")
+        }
+
     }
 
     private fun callSeller() {
-        val callIntent = Intent(Intent.ACTION_DIAL)
-        callIntent.data = Uri.parse("tel:0$sellerPhone")
-        startActivity(callIntent)
-    }
+//        val callIntent = Intent(Intent.ACTION_DIAL)
+//        callIntent.data = Uri.parse("tel:0$sellerPhone")
+//        startActivity(callIntent)
 
-    private fun requestSmsPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.SEND_SMS), 101)
-    }
-
-    private fun requestCallPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CALL_PHONE), 121)
+        val callIntent = Intent().apply {
+            action = Intent.ACTION_DIAL
+            data = Uri.parse("tel:0$sellerPhone")
+        }
+        try {
+            startActivity(callIntent)
+        } catch (e: ActivityNotFoundException) {
+            Log.d(TAG, "Call Activity Not Found: $e")
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

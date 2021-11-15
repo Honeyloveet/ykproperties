@@ -1,6 +1,5 @@
-package net.ykproperties.ykproperties.Model
+package net.ykproperties.ykproperties.model
 
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.*
 import kotlin.collections.ArrayList
@@ -36,6 +35,7 @@ data class ProductsModel(
     var userPosted: String = "",
     var views: Long = 0,
     var year: Long = 0,
+    var sold: Boolean = false,
     @ServerTimestamp
     var postDate: Date? = null,
     @ServerTimestamp

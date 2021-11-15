@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "net.ykproperties.ykproperties"
-        minSdk 23
+        minSdk 24
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -35,16 +35,18 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     implementation 'com.google.android.gms:play-services-base:17.6.0'
-    implementation "com.google.firebase:firebase-firestore:23.0.3"
+//    implementation "com.google.firebase:firebase-firestore:23.0.4"
 
     implementation 'com.github.MikeOrtiz:TouchImageView:3.1.1'
 
     implementation 'com.github.denzcoskun:ImageSlideshow:0.1.0'
+
+    implementation 'androidx.paging:paging-runtime-ktx:3.0.1'
 
     // Declare the dependency for the Firebase Authentication library
     // When NOT using the BoM, you must specify versions in Firebase library dependencies
@@ -55,7 +57,7 @@ dependencies {
 
     // Also declare the dependency for the Google Play services library and specify its version
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
-    implementation 'com.google.firebase:firebase-firestore-ktx:23.0.3'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.0.0'
     implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
 
     testImplementation 'junit:junit:4.13.2'
@@ -70,12 +72,19 @@ dependencies {
     implementation 'id.zelory:compressor:3.0.1'
 
     // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2-native-mt'
 
     // Coroutine Lifecycle Scopes
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+
+    // Firebase Coroutine dependency
+    // implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2-native-mt'
+
+    // RecyclerViewSwipeDecorator
+    implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.3'
 
     // CottaCush currency edittext library
     implementation 'com.cottacush:CurrencyEditText:0.0.9'

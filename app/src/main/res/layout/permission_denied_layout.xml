@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="24dp" >
+
+    <ImageView
+        android:id="@+id/imViewPermissionDeniedLogo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/login_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/login_app_logo_01"
+        tools:ignore="ImageContrastCheck"
+        tools:srcCompat="@drawable/login_app_logo_01" />
+
+    <TextView
+        android:id="@+id/tvPermissionDeniedMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:layout_marginTop="32dp"
+        android:text="In order to post an item you have to allow access permission for storage and photos. Do you want to try again?"
+        android:textAlignment="center"
+        android:textColor="@color/gray_text"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imViewPermissionDeniedLogo" />
+
+    <Button
+        android:id="@+id/btnYes"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="12dp"
+        android:text="Yes"
+        android:textAllCaps="false"
+        android:textColor="@color/gray_text"
+        app:backgroundTint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPermissionDeniedMessage" />
+
+    <Button
+        android:id="@+id/btnNo"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="76dp"
+        android:text="No"
+        android:textAllCaps="false"
+        android:textColor="@color/gray_text"
+        app:backgroundTint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPermissionDeniedMessage" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

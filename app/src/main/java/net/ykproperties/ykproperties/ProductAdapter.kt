@@ -9,18 +9,34 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import net.ykproperties.ykproperties.Model.ProductsModel
+import net.ykproperties.ykproperties.model.ProductsModel
 import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ProductAdapter (val context: Context, private val items: ArrayList<ProductsModel>) :
-    RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+class ProductAdapter (val context: Context, private var productList: MutableList<ProductsModel>) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
     private lateinit var mListener : OnItemClickListener
 
     interface OnItemClickListener{
         fun onItemClick(position: Int)
+    }
+
+    val lastItemUid: String
+        get() = productList[productList.size - 1].uid
+
+    fun addAll(newProducts:List<ProductsModel>){
+        val init = productList.size
+        productList.addAll(newProducts)
+        notifyItemRangeChanged(init,newProducts.size)
+    }
+
+    fun clearProductList() {
+        if (!productList.isNullOrEmpty()){
+            val size = productList.size
+            productList.clear()
+            notifyItemRangeRemoved(0,size)
+        }
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
@@ -35,7 +51,7 @@ class ProductAdapter (val context: Context, private val items: ArrayList<Product
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            LayoutInflater.from(context).inflate(
+            LayoutInflater.from(parent.context).inflate(
                 R.layout.grid_item_view,
                 parent,
                 false
@@ -55,28 +71,72 @@ class ProductAdapter (val context: Context, private val items: ArrayList<Product
      */
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-        val item = items[position]
+        val item = productList[position]
 
         if (item.category == "Cars") {
             holder.tvProductIdGridV.text = item.uid
             holder.tvTitleGridV.text = "${item.make} ${item.model}"
             holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            if (item.sold) {
+                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                    holder.tvPriceGridV.text = "Sold"
+                    holder.tvProductStatusGridV.text = "Sold"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                } else {
+                    holder.tvProductStatusGridV.text = "Rented"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                }
+            } else {
+                holder.tvProductStatusGridV.visibility = View.GONE
+            }
             Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
         } else if (item.category == "House") {
             holder.tvProductIdGridV.text = item.uid
             holder.tvTitleGridV.text = "Location: ${item.location}"
             holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            if (item.sold) {
+                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                    holder.tvProductStatusGridV.text = "Sold"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                } else {
+                    holder.tvProductStatusGridV.text = "Rented"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                }
+            } else {
+                holder.tvProductStatusGridV.visibility = View.GONE
+            }
             Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
         } else if (item.category == "Other") {
             holder.tvProductIdGridV.text = item.uid
             holder.tvTitleGridV.text = item.title
             holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            if (item.sold) {
+                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                    holder.tvProductStatusGridV.text = "Sold"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                } else {
+                    holder.tvProductStatusGridV.text = "Rented"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                }
+            } else {
+                holder.tvProductStatusGridV.visibility = View.GONE
+            }
             Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
         } else if (item.category == "Land") {
             holder.tvProductIdGridV.text = item.uid
             holder.tvTitleGridV.text = "Location: ${item.location}"
             holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+            if (item.sold) {
+                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                    holder.tvProductStatusGridV.text = "Sold"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                } else {
+                    holder.tvProductStatusGridV.text = "Rented"
+                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                }
+            } else {
+                holder.tvProductStatusGridV.visibility = View.GONE
+            }
             if (item.pictures.isNotEmpty()) {
                 if (item.pictures[0] != "") {
                     Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
@@ -85,22 +145,16 @@ class ProductAdapter (val context: Context, private val items: ArrayList<Product
                 }
             }
         }
-//        holder.tvProductIdGridV.text = item.uid
-//        holder.tvTitleGridV.text = "Location ${item.location}"
-//        holder.tvPriceGridV.text = "${item.price} ${item.purpose}"
-//        Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
-//        holder.tvGender.text = item.gender
-//        holder.tvWeight.text = item.weight.toString()
-//        holder.tvHeight.text = item.height.toString()
-//        holder.tvMobileNumber.text = item.mobile
-//        holder.tvOfficeNumber.text = item.office
     }
+
+    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemViewType(position: Int) = position
 
     /**
      * Gets the number of items in the list
      */
     override fun getItemCount(): Int {
-        return items.size
+        return productList.size
     }
 
     /**
@@ -112,16 +166,13 @@ class ProductAdapter (val context: Context, private val items: ArrayList<Product
         val tvPriceGridV :TextView = view.findViewById(R.id.tvPriceGridV)
         val ivItemsGridV: ImageView = view.findViewById(R.id.ivItemsGridV)
         val tvProductIdGridV: TextView = view.findViewById(R.id.tvProductIdGridV)
+        val tvProductStatusGridV: TextView = view.findViewById(R.id.tvProductStatusGridV)
 
         init {
             view.setOnClickListener {
                 listener.onItemClick(absoluteAdapterPosition)
             }
         }
-
-    }
-
-    private fun formatPrice() {
 
     }
 }

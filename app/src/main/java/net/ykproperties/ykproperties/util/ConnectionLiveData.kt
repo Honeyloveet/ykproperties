@@ -40,6 +40,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
             .addCapability(NET_CAPABILITY_INTERNET)
             .build()
         cm.registerNetworkCallback(networkRequest, networkCallback)
+//        cm.registerDefaultNetworkCallback(networkCallback)
     }
 
     override fun onInactive() {
@@ -61,6 +62,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
                 // check if this network actually has internet
                 CoroutineScope(Dispatchers.IO).launch {
                     val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
+                    NetworkVariables.isNetworkConnected = hasInternet
                     if(hasInternet){
                         withContext(Dispatchers.Main){
                             Log.d(TAG, "onAvailable: adding network. $network")
@@ -78,6 +80,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
          */
         override fun onLost(network: Network) {
             Log.d(TAG, "onLost: $network")
+            NetworkVariables.isNetworkConnected = false
             validNetworks.remove(network)
             checkValidNetworks()
         }

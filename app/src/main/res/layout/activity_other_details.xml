@@ -53,6 +53,26 @@
                     android:layout_height="match_parent"
                     android:paddingTop="5dp" >
 
+                    <TextView
+                        android:id="@+id/tvOtherDetailStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:rotation="-20"
+                        android:shadowColor="@color/white"
+                        android:shadowDx="5"
+                        android:shadowDy="5"
+                        android:shadowRadius="5"
+                        android:text="SOLD"
+                        android:textColor="@color/red"
+                        android:textSize="50sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/ivProductDetail"
+                        app:layout_constraintEnd_toEndOf="@+id/ivProductDetail"
+                        app:layout_constraintStart_toStartOf="@+id/ivProductDetail"
+                        app:layout_constraintTop_toTopOf="@+id/ivProductDetail" />
+
                     <com.denzcoskun.imageslider.ImageSlider
                         android:id="@+id/ivProductDetail"
                         android:layout_width="0dp"
