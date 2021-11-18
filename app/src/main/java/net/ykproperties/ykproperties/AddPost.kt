@@ -913,7 +913,7 @@ class AddPost : AppCompatActivity() {
                     files?.forEach { file ->
                         try {
                             file.delete()
-                            Toast.makeText(this,"Deleted ${file.name}",Toast.LENGTH_SHORT).show()
+                            Log.i(TAG, "Deleted ${file.name}")
                         } catch (e: Exception) {
                             e.printStackTrace()
                             Log.v(TAG, "Failed to delete:" + e.printStackTrace())
@@ -924,7 +924,6 @@ class AddPost : AppCompatActivity() {
         }
     }
 
-    @Suppress("unused")
     private fun deletePhotosFromInternalStorage(name: String? = null) {
         lifecycleScope.launch {
             val photos = loadPhotosFromInternalStorage()

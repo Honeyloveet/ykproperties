@@ -520,7 +520,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!NetworkVariables.isNetworkConnected){
             showManualConnectionSnackBar()
         } else {
-            TODO("resume operation when internet connection is available")
+//            TODO("resume operation when internet connection is available")
         }
     }
 
@@ -556,7 +556,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         updateUI(currentUser)
     }
 
-    //    @SuppressLint("UnresolvedReference")
+//    @Suppress("UnresolvedReference")
     private fun createGoogleRequest() {
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

@@ -15,7 +15,6 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import net.ykproperties.ykproperties.model.ProductsModel
-import android.content.DialogInterface
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
@@ -24,9 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import net.ykproperties.ykproperties.util.ConnectionLiveData
 
 
@@ -68,7 +65,10 @@ class CurrentUserProducts : AppCompatActivity() {
     private var isLoading = false
     private var isMaxData = false
 
-    private lateinit var adapter: UserProductAdapter
+    private var currentUserName: String? = null
+    private var currentUserUid: String? = null
+
+    private lateinit var adapter: CurrentUserProductsAdapter
     private lateinit var productsArrayList: MutableList<ProductsModel>
 
     @SuppressLint("NotifyDataSetChanged")
@@ -98,21 +98,21 @@ class CurrentUserProducts : AppCompatActivity() {
         }
 
         val bundle = intent.extras
-        var currentUserName = bundle!!.getString("currentUserName")
-        var currentUserUid = bundle.getString("currentUserUid")
+        currentUserName = bundle!!.getString("currentUserName")
+        currentUserUid = bundle.getString("currentUserUid")
 
         getLastKey()
 
         val layoutManager = LinearLayoutManager(this)
         rvCurrentUserProducts.layoutManager = layoutManager
         productsArrayList = mutableListOf()
-        adapter = UserProductAdapter(this, productsArrayList)
+        adapter = CurrentUserProductsAdapter(this, productsArrayList)
         rvCurrentUserProducts.adapter = adapter
 
 //        getCurrentUserProducts()
         getProducts()
 
-        adapter.setOnItemClickListener(object : UserProductAdapter.OnItemClickListener {
+        adapter.setOnItemClickListener(object : CurrentUserProductsAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
 //                Toast.makeText(this@CurrentUserProducts,"Adapter Clicked at position: $position",Toast.LENGTH_SHORT).show()
             }
@@ -291,6 +291,11 @@ class CurrentUserProducts : AppCompatActivity() {
             progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
             progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Loading..."
             progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
+
+//            val query: Query = if (lastResult == null) {
+//                prodRef.orderBy("postDate", Query.Direction.DESCENDING)
+//                    .whereEqualTo("userPosted",currentUserUid)
+//                    .limit(ITEM_COUNT_LIMIT)
 
             val query: Query = if (lastResult == null) {
                 prodRef.orderBy("postDate", Query.Direction.DESCENDING)
