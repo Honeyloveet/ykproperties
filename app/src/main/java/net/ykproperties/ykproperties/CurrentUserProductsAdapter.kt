@@ -86,7 +86,7 @@ class CurrentUserProductsAdapter (val context: Context, private var productList:
                 } else {
                     holder.tvCurrentUserProductStatus.visibility = View.GONE
                 }
-                Glide.with(context).load(item.pictures[0]).into(holder.ivCurrentUserProducts)
+                Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_car).into(holder.ivCurrentUserProducts)
             }
             "House" -> {
                 holder.tvCurrentUserProductsTitle.text = "Location: ${item.location}"
@@ -97,7 +97,7 @@ class CurrentUserProductsAdapter (val context: Context, private var productList:
                 } else {
                     holder.tvCurrentUserProductStatus.visibility = View.GONE
                 }
-                Glide.with(context).load(item.pictures[0]).into(holder.ivCurrentUserProducts)
+                Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_home).into(holder.ivCurrentUserProducts)
             }
             "Other" -> {
                 holder.tvCurrentUserProductsTitle.text = item.title
@@ -108,7 +108,7 @@ class CurrentUserProductsAdapter (val context: Context, private var productList:
                 } else {
                     holder.tvCurrentUserProductStatus.visibility = View.GONE
                 }
-                Glide.with(context).load(item.pictures[0]).into(holder.ivCurrentUserProducts)
+                Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_other).into(holder.ivCurrentUserProducts)
             }
             "Land" -> {
                 holder.tvCurrentUserProductsTitle.text = "Location: ${item.location}"

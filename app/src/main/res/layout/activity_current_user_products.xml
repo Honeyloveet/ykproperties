@@ -15,6 +15,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ProgressBar
+        android:id="@+id/currentUserProductsProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:elevation="1dp"
+        android:visibility="gone"
+        android:indeterminateTint="@color/orange_main"
+        app:layout_constraintBottom_toBottomOf="@+id/rvCurrentUserProducts"
+        app:layout_constraintEnd_toEndOf="@+id/rvCurrentUserProducts"
+        app:layout_constraintStart_toStartOf="@+id/rvCurrentUserProducts"
+        app:layout_constraintTop_toBottomOf="@+id/toolBarCurrentUserProducts" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCurrentUserProducts"
         android:layout_width="match_parent"

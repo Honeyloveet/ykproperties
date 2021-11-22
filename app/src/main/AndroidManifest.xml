@@ -28,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YKProperties">
         <activity
+            android:name=".UserProductEdit"
+            android:exported="false" />
+        <activity
             android:name=".CurrentUserProducts"
             android:exported="false"
             android:screenOrientation="portrait"

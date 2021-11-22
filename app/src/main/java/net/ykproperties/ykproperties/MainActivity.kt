@@ -392,7 +392,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (selectedCategory == "All") {
 
                     Log.i(TAG, "total adapter item = $totalItems item count = ${lastVisibleItem + ITEM_COUNT_LIMIT}")
-                    if (totalItems <= lastVisibleItem + ITEM_COUNT_LIMIT) {
+                    if (totalItems <= lastVisibleItem + 3) {
                         if (!isLoading) {
                             isLoading = true
                             getEveryProduct()
@@ -402,7 +402,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     Log.i(TAG, "total adapter item = $totalItems item count = ${lastVisibleItem + ITEM_COUNT_LIMIT}")
 
-                    if (totalItems < lastVisibleItem + 3) {
+                    if (totalItems <= lastVisibleItem + 3) {
                         if (!isLoading) {
                             isLoading = true
                             getCarProducts()
@@ -412,7 +412,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     Log.i(TAG, "total adapter item = $totalItems item count = ${lastVisibleItem + ITEM_COUNT_LIMIT}")
 
-                    if (totalItems < lastVisibleItem + 3) {
+                    if (totalItems <= lastVisibleItem + 3) {
                         if (!isLoading) {
                             isLoading = true
                             getHouseProducts()
@@ -422,7 +422,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     Log.i(TAG, "total adapter item = $totalItems item count = ${lastVisibleItem + ITEM_COUNT_LIMIT}")
 
-                    if (totalItems < lastVisibleItem + 3) {
+                    if (totalItems <= lastVisibleItem + 3) {
                         if (!isLoading) {
                             isLoading = true
                             getLandProducts()
@@ -432,7 +432,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     Log.i(TAG, "total adapter item = $totalItems item count = ${lastVisibleItem + ITEM_COUNT_LIMIT}")
 
-                    if (totalItems < lastVisibleItem + 3) {
+                    if (totalItems <= lastVisibleItem + 3) {
                         if (!isLoading) {
                             isLoading = true
                             getOtherProducts()

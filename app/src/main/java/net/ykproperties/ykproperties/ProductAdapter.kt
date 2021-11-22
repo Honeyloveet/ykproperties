@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide
 import net.ykproperties.ykproperties.model.ProductsModel
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ProductAdapter (val context: Context, private var productList: MutableList<ProductsModel>) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
@@ -73,75 +72,80 @@ class ProductAdapter (val context: Context, private var productList: MutableList
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = productList[position]
 
-        if (item.category == "Cars") {
-            holder.tvProductIdGridV.text = item.uid
-            holder.tvTitleGridV.text = "${item.make} ${item.model}"
-            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
-            if (item.sold) {
-                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
-                    holder.tvPriceGridV.text = "Sold"
-                    holder.tvProductStatusGridV.text = "Sold"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+        when (item.category) {
+            "Cars" -> {
+                holder.tvProductIdGridV.text = item.uid
+                holder.tvTitleGridV.text = "${item.make} ${item.model}"
+                holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+                if (item.sold) {
+                    if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                        holder.tvPriceGridV.text = "Sold"
+                        holder.tvProductStatusGridV.text = "Sold"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    } else {
+                        holder.tvProductStatusGridV.text = "Rented"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    }
                 } else {
-                    holder.tvProductStatusGridV.text = "Rented"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    holder.tvProductStatusGridV.visibility = View.GONE
                 }
-            } else {
-                holder.tvProductStatusGridV.visibility = View.GONE
+                Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_car).into(holder.ivItemsGridV)
             }
-            Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
-        } else if (item.category == "House") {
-            holder.tvProductIdGridV.text = item.uid
-            holder.tvTitleGridV.text = "Location: ${item.location}"
-            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
-            if (item.sold) {
-                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
-                    holder.tvProductStatusGridV.text = "Sold"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+            "House" -> {
+                holder.tvProductIdGridV.text = item.uid
+                holder.tvTitleGridV.text = "Location: ${item.location}"
+                holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+                if (item.sold) {
+                    if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                        holder.tvProductStatusGridV.text = "Sold"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    } else {
+                        holder.tvProductStatusGridV.text = "Rented"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    }
                 } else {
-                    holder.tvProductStatusGridV.text = "Rented"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    holder.tvProductStatusGridV.visibility = View.GONE
                 }
-            } else {
-                holder.tvProductStatusGridV.visibility = View.GONE
+                Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_home).into(holder.ivItemsGridV)
             }
-            Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
-        } else if (item.category == "Other") {
-            holder.tvProductIdGridV.text = item.uid
-            holder.tvTitleGridV.text = item.title
-            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
-            if (item.sold) {
-                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
-                    holder.tvProductStatusGridV.text = "Sold"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+            "Other" -> {
+                holder.tvProductIdGridV.text = item.uid
+                holder.tvTitleGridV.text = item.title
+                holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+                if (item.sold) {
+                    if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                        holder.tvProductStatusGridV.text = "Sold"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    } else {
+                        holder.tvProductStatusGridV.text = "Rented"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    }
                 } else {
-                    holder.tvProductStatusGridV.text = "Rented"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    holder.tvProductStatusGridV.visibility = View.GONE
                 }
-            } else {
-                holder.tvProductStatusGridV.visibility = View.GONE
+                Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_other).into(holder.ivItemsGridV)
             }
-            Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
-        } else if (item.category == "Land") {
-            holder.tvProductIdGridV.text = item.uid
-            holder.tvTitleGridV.text = "Location: ${item.location}"
-            holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
-            if (item.sold) {
-                if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
-                    holder.tvProductStatusGridV.text = "Sold"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+            "Land" -> {
+                holder.tvProductIdGridV.text = item.uid
+                holder.tvTitleGridV.text = "Location: ${item.location}"
+                holder.tvPriceGridV.text = "Br ${NumberFormat.getInstance(Locale.US).format(item.price)} ${item.purpose}"
+                if (item.sold) {
+                    if (item.purpose == "For Sale" || item.purpose == "For Sale/Exchange") {
+                        holder.tvProductStatusGridV.text = "Sold"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    } else {
+                        holder.tvProductStatusGridV.text = "Rented"
+                        holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    }
                 } else {
-                    holder.tvProductStatusGridV.text = "Rented"
-                    holder.tvProductStatusGridV.visibility = View.VISIBLE
+                    holder.tvProductStatusGridV.visibility = View.GONE
                 }
-            } else {
-                holder.tvProductStatusGridV.visibility = View.GONE
-            }
-            if (item.pictures.isNotEmpty()) {
-                if (item.pictures[0] != "") {
-                    Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
-                } else {
-                    holder.ivItemsGridV.setImageResource(R.drawable.ic_add_photo)
+                if (item.pictures.isNotEmpty()) {
+                    if (item.pictures[0] != "") {
+                        Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
+                    } else {
+                        holder.ivItemsGridV.setImageResource(R.drawable.ic_add_photo)
+                    }
                 }
             }
         }

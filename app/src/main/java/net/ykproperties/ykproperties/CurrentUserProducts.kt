@@ -2,6 +2,7 @@ package net.ykproperties.ykproperties
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,7 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import net.ykproperties.ykproperties.model.ProductsModelParcelable
 import net.ykproperties.ykproperties.util.ConnectionLiveData
 
 
@@ -31,7 +33,7 @@ class CurrentUserProducts : AppCompatActivity() {
 
     private companion object {
         private const val TAG = "SAMUEL"
-        private const val ITEM_COUNT_LIMIT = 10L
+        private const val ITEM_COUNT_LIMIT = 8L
     }
 
     private lateinit var networkConnectionStatus: ConnectionLiveData
@@ -40,9 +42,11 @@ class CurrentUserProducts : AppCompatActivity() {
 
     private lateinit var rvCurrentUserProducts: RecyclerView
 
-    private lateinit var progressDialog: AlertDialog
+//    private lateinit var progressDialog: AlertDialog
 
     private lateinit var currentUserProductsLayout: ConstraintLayout
+
+    private lateinit var currentUserProductsProgressBar: ProgressBar
 
 //    private lateinit var btnCurrentUserProductsRefresh: Button
 
@@ -84,9 +88,11 @@ class CurrentUserProducts : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolBarCurrentUserProducts)
         rvCurrentUserProducts = findViewById(R.id.rvCurrentUserProducts)
+
+        currentUserProductsProgressBar = findViewById(R.id.currentUserProductsProgressBar)
 //        btnCurrentUserProductsRefresh = findViewById(R.id.btnCurrentUserProductsRefresh)
 
-        setupCustomProgressDialog()
+//        setupCustomProgressDialog()
 
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -118,7 +124,208 @@ class CurrentUserProducts : AppCompatActivity() {
             }
 
             override fun onEditClick(position: Int) {
-                Toast.makeText(this@CurrentUserProducts,"Edit Clicked at position: $position",Toast.LENGTH_SHORT).show()
+
+                val productToEdit = ProductsModelParcelable().apply {
+                    uid = productsArrayList[position].uid
+                    title = productsArrayList[position].title
+                    price = productsArrayList[position].price
+                    make = productsArrayList[position].make
+                    model = productsArrayList[position].model
+                    bathRooms = productsArrayList[position].bathRooms
+                    bedRooms = productsArrayList[position].bedRooms
+                    category = productsArrayList[position].category
+                    color = productsArrayList[position].color
+                    condition = productsArrayList[position].condition
+                    description = productsArrayList[position].description
+                    engineSize = productsArrayList[position].engineSize
+                    fuel = productsArrayList[position].fuel
+                    houseType = productsArrayList[position].houseType
+                    kitchenType = productsArrayList[position].kitchenType
+                    kitchens = productsArrayList[position].kitchens
+                    location = productsArrayList[position].location
+                    mileage = productsArrayList[position].mileage
+                    phone = productsArrayList[position].phone
+                    pictures = productsArrayList[position].pictures
+                    plate = productsArrayList[position].plate
+                    purpose = productsArrayList[position].purpose
+                    reported = productsArrayList[position].reported
+                    reportedNumber = productsArrayList[position].reportedNumber
+                    seller = productsArrayList[position].seller
+                    size = productsArrayList[position].size
+                    transmission = productsArrayList[position].transmission
+                    userPosted = productsArrayList[position].userPosted
+                    views = productsArrayList[position].views
+                    year = productsArrayList[position].year
+                    sold = productsArrayList[position].sold
+                    postDate = productsArrayList[position].postDate
+                    updateDate = productsArrayList[position].updateDate
+                }
+
+                val intent = Intent(this@CurrentUserProducts, UserProductEdit::class.java)
+                intent.putExtra("productToEdit", productToEdit)
+
+                startActivity(intent)
+
+/*                when(this@CurrentUserProducts.productsArrayList[position].category) {
+                    "Cars" -> {
+                        val intent = Intent(this@CurrentUserProducts, UserProductEdit::class.java).apply {
+                            putExtra("uid", this@CurrentUserProducts.productsArrayList[position].uid)
+                            putExtra("title", this@CurrentUserProducts.productsArrayList[position].title)
+                            putExtra("price", this@CurrentUserProducts.productsArrayList[position].price)
+                            putExtra("make", this@CurrentUserProducts.productsArrayList[position].make)
+                            putExtra("model", this@CurrentUserProducts.productsArrayList[position].model)
+                            putExtra("bathRooms", this@CurrentUserProducts.productsArrayList[position].bathRooms)
+                            putExtra("bedRooms", this@CurrentUserProducts.productsArrayList[position].bedRooms)
+                            putExtra("category", this@CurrentUserProducts.productsArrayList[position].category)
+                            putExtra("color", this@CurrentUserProducts.productsArrayList[position].color)
+                            putExtra("condition", this@CurrentUserProducts.productsArrayList[position].condition)
+                            putExtra("description", this@CurrentUserProducts.productsArrayList[position].description)
+                            putExtra("engineSize", this@CurrentUserProducts.productsArrayList[position].engineSize)
+                            putExtra("fuel", this@CurrentUserProducts.productsArrayList[position].fuel)
+                            putExtra("houseType", this@CurrentUserProducts.productsArrayList[position].houseType)
+                            putExtra("kitchenType", this@CurrentUserProducts.productsArrayList[position].kitchenType)
+                            putExtra("kitchens", this@CurrentUserProducts.productsArrayList[position].kitchens)
+                            putExtra("location", this@CurrentUserProducts.productsArrayList[position].location)
+                            putExtra("mileage", this@CurrentUserProducts.productsArrayList[position].mileage)
+                            putExtra("phone", this@CurrentUserProducts.productsArrayList[position].phone)
+                            putExtra("imgUrls",this@CurrentUserProducts.productsArrayList[position].pictures)
+                            putExtra("plate", this@CurrentUserProducts.productsArrayList[position].plate)
+                            putExtra("purpose", this@CurrentUserProducts.productsArrayList[position].purpose)
+                            putExtra("reported", this@CurrentUserProducts.productsArrayList[position].reported)
+                            putExtra("reportedNumber", this@CurrentUserProducts.productsArrayList[position].reportedNumber)
+                            putExtra("seller", this@CurrentUserProducts.productsArrayList[position].seller)
+                            putExtra("size", this@CurrentUserProducts.productsArrayList[position].size)
+                            putExtra("transmission", this@CurrentUserProducts.productsArrayList[position].transmission)
+                            putExtra("userPosted", this@CurrentUserProducts.productsArrayList[position].userPosted)
+                            putExtra("views", this@CurrentUserProducts.productsArrayList[position].views)
+                            putExtra("year", this@CurrentUserProducts.productsArrayList[position].year)
+                            putExtra("sold", this@CurrentUserProducts.productsArrayList[position].sold)
+                            putExtra("postDate", this@CurrentUserProducts.productsArrayList[position].postDate?.time)
+                            putExtra("updateDate", this@CurrentUserProducts.productsArrayList[position].updateDate?.time)
+                        }
+
+                        startActivity(intent)
+                    }
+                    "House" -> {
+                        val intent = Intent(this@CurrentUserProducts, UserProductEdit::class.java).apply {
+                            putExtra("uid", this@CurrentUserProducts.productsArrayList[position].uid)
+                            putExtra("title", this@CurrentUserProducts.productsArrayList[position].title)
+                            putExtra("price", this@CurrentUserProducts.productsArrayList[position].price)
+                            putExtra("make", this@CurrentUserProducts.productsArrayList[position].make)
+                            putExtra("model", this@CurrentUserProducts.productsArrayList[position].model)
+                            putExtra("bathRooms", this@CurrentUserProducts.productsArrayList[position].bathRooms)
+                            putExtra("bedRooms", this@CurrentUserProducts.productsArrayList[position].bedRooms)
+                            putExtra("category", this@CurrentUserProducts.productsArrayList[position].category)
+                            putExtra("color", this@CurrentUserProducts.productsArrayList[position].color)
+                            putExtra("condition", this@CurrentUserProducts.productsArrayList[position].condition)
+                            putExtra("description", this@CurrentUserProducts.productsArrayList[position].description)
+                            putExtra("engineSize", this@CurrentUserProducts.productsArrayList[position].engineSize)
+                            putExtra("fuel", this@CurrentUserProducts.productsArrayList[position].fuel)
+                            putExtra("houseType", this@CurrentUserProducts.productsArrayList[position].houseType)
+                            putExtra("kitchenType", this@CurrentUserProducts.productsArrayList[position].kitchenType)
+                            putExtra("kitchens", this@CurrentUserProducts.productsArrayList[position].kitchens)
+                            putExtra("location", this@CurrentUserProducts.productsArrayList[position].location)
+                            putExtra("mileage", this@CurrentUserProducts.productsArrayList[position].mileage)
+                            putExtra("phone", this@CurrentUserProducts.productsArrayList[position].phone)
+                            putExtra("imgUrls",this@CurrentUserProducts.productsArrayList[position].pictures)
+                            putExtra("plate", this@CurrentUserProducts.productsArrayList[position].plate)
+                            putExtra("purpose", this@CurrentUserProducts.productsArrayList[position].purpose)
+                            putExtra("reported", this@CurrentUserProducts.productsArrayList[position].reported)
+                            putExtra("reportedNumber", this@CurrentUserProducts.productsArrayList[position].reportedNumber)
+                            putExtra("seller", this@CurrentUserProducts.productsArrayList[position].seller)
+                            putExtra("size", this@CurrentUserProducts.productsArrayList[position].size)
+                            putExtra("transmission", this@CurrentUserProducts.productsArrayList[position].transmission)
+                            putExtra("userPosted", this@CurrentUserProducts.productsArrayList[position].userPosted)
+                            putExtra("views", this@CurrentUserProducts.productsArrayList[position].views)
+                            putExtra("year", this@CurrentUserProducts.productsArrayList[position].year)
+                            putExtra("sold", this@CurrentUserProducts.productsArrayList[position].sold)
+                            putExtra("postDate", this@CurrentUserProducts.productsArrayList[position].postDate?.time)
+                            putExtra("updateDate", this@CurrentUserProducts.productsArrayList[position].updateDate?.time)
+                        }
+
+                        startActivity(intent)
+                    }
+                    "Land" -> {
+                        val intent = Intent(this@CurrentUserProducts, UserProductEdit::class.java).apply {
+                            putExtra("uid", this@CurrentUserProducts.productsArrayList[position].uid)
+                            putExtra("title", this@CurrentUserProducts.productsArrayList[position].title)
+                            putExtra("price", this@CurrentUserProducts.productsArrayList[position].price)
+                            putExtra("make", this@CurrentUserProducts.productsArrayList[position].make)
+                            putExtra("model", this@CurrentUserProducts.productsArrayList[position].model)
+                            putExtra("bathRooms", this@CurrentUserProducts.productsArrayList[position].bathRooms)
+                            putExtra("bedRooms", this@CurrentUserProducts.productsArrayList[position].bedRooms)
+                            putExtra("category", this@CurrentUserProducts.productsArrayList[position].category)
+                            putExtra("color", this@CurrentUserProducts.productsArrayList[position].color)
+                            putExtra("condition", this@CurrentUserProducts.productsArrayList[position].condition)
+                            putExtra("description", this@CurrentUserProducts.productsArrayList[position].description)
+                            putExtra("engineSize", this@CurrentUserProducts.productsArrayList[position].engineSize)
+                            putExtra("fuel", this@CurrentUserProducts.productsArrayList[position].fuel)
+                            putExtra("houseType", this@CurrentUserProducts.productsArrayList[position].houseType)
+                            putExtra("kitchenType", this@CurrentUserProducts.productsArrayList[position].kitchenType)
+                            putExtra("kitchens", this@CurrentUserProducts.productsArrayList[position].kitchens)
+                            putExtra("location", this@CurrentUserProducts.productsArrayList[position].location)
+                            putExtra("mileage", this@CurrentUserProducts.productsArrayList[position].mileage)
+                            putExtra("phone", this@CurrentUserProducts.productsArrayList[position].phone)
+                            putExtra("imgUrls",this@CurrentUserProducts.productsArrayList[position].pictures)
+                            putExtra("plate", this@CurrentUserProducts.productsArrayList[position].plate)
+                            putExtra("purpose", this@CurrentUserProducts.productsArrayList[position].purpose)
+                            putExtra("reported", this@CurrentUserProducts.productsArrayList[position].reported)
+                            putExtra("reportedNumber", this@CurrentUserProducts.productsArrayList[position].reportedNumber)
+                            putExtra("seller", this@CurrentUserProducts.productsArrayList[position].seller)
+                            putExtra("size", this@CurrentUserProducts.productsArrayList[position].size)
+                            putExtra("transmission", this@CurrentUserProducts.productsArrayList[position].transmission)
+                            putExtra("userPosted", this@CurrentUserProducts.productsArrayList[position].userPosted)
+                            putExtra("views", this@CurrentUserProducts.productsArrayList[position].views)
+                            putExtra("year", this@CurrentUserProducts.productsArrayList[position].year)
+                            putExtra("sold", this@CurrentUserProducts.productsArrayList[position].sold)
+                            putExtra("postDate", this@CurrentUserProducts.productsArrayList[position].postDate?.time)
+                            putExtra("updateDate", this@CurrentUserProducts.productsArrayList[position].updateDate?.time)
+                        }
+
+                        startActivity(intent)
+                    }
+                    "Other" -> {
+                        val intent = Intent(this@CurrentUserProducts, UserProductEdit::class.java).apply {
+                            putExtra("uid", this@CurrentUserProducts.productsArrayList[position].uid)
+                            putExtra("title", this@CurrentUserProducts.productsArrayList[position].title)
+                            putExtra("price", this@CurrentUserProducts.productsArrayList[position].price)
+                            putExtra("make", this@CurrentUserProducts.productsArrayList[position].make)
+                            putExtra("model", this@CurrentUserProducts.productsArrayList[position].model)
+                            putExtra("bathRooms", this@CurrentUserProducts.productsArrayList[position].bathRooms)
+                            putExtra("bedRooms", this@CurrentUserProducts.productsArrayList[position].bedRooms)
+                            putExtra("category", this@CurrentUserProducts.productsArrayList[position].category)
+                            putExtra("color", this@CurrentUserProducts.productsArrayList[position].color)
+                            putExtra("condition", this@CurrentUserProducts.productsArrayList[position].condition)
+                            putExtra("description", this@CurrentUserProducts.productsArrayList[position].description)
+                            putExtra("engineSize", this@CurrentUserProducts.productsArrayList[position].engineSize)
+                            putExtra("fuel", this@CurrentUserProducts.productsArrayList[position].fuel)
+                            putExtra("houseType", this@CurrentUserProducts.productsArrayList[position].houseType)
+                            putExtra("kitchenType", this@CurrentUserProducts.productsArrayList[position].kitchenType)
+                            putExtra("kitchens", this@CurrentUserProducts.productsArrayList[position].kitchens)
+                            putExtra("location", this@CurrentUserProducts.productsArrayList[position].location)
+                            putExtra("mileage", this@CurrentUserProducts.productsArrayList[position].mileage)
+                            putExtra("phone", this@CurrentUserProducts.productsArrayList[position].phone)
+                            putExtra("imgUrls",this@CurrentUserProducts.productsArrayList[position].pictures)
+                            putExtra("plate", this@CurrentUserProducts.productsArrayList[position].plate)
+                            putExtra("purpose", this@CurrentUserProducts.productsArrayList[position].purpose)
+                            putExtra("reported", this@CurrentUserProducts.productsArrayList[position].reported)
+                            putExtra("reportedNumber", this@CurrentUserProducts.productsArrayList[position].reportedNumber)
+                            putExtra("seller", this@CurrentUserProducts.productsArrayList[position].seller)
+                            putExtra("size", this@CurrentUserProducts.productsArrayList[position].size)
+                            putExtra("transmission", this@CurrentUserProducts.productsArrayList[position].transmission)
+                            putExtra("userPosted", this@CurrentUserProducts.productsArrayList[position].userPosted)
+                            putExtra("views", this@CurrentUserProducts.productsArrayList[position].views)
+                            putExtra("year", this@CurrentUserProducts.productsArrayList[position].year)
+                            putExtra("sold", this@CurrentUserProducts.productsArrayList[position].sold)
+                            putExtra("postDate", this@CurrentUserProducts.productsArrayList[position].postDate?.time)
+                            putExtra("updateDate", this@CurrentUserProducts.productsArrayList[position].updateDate?.time)
+                        }
+
+                        startActivity(intent)
+                    }
+                }*/
+
+//                Toast.makeText(this@CurrentUserProducts,"Edit Clicked at position: $position",Toast.LENGTH_SHORT).show()
             }
 
             override fun onDeleteClick(position: Int) {
@@ -273,24 +480,24 @@ class CurrentUserProducts : AppCompatActivity() {
         })
     }
 
-    private fun setupCustomProgressDialog() {
-        val alertView = View.inflate(this@CurrentUserProducts, R.layout.custom_progress_bar,null)
-
-        val alertBuilder = AlertDialog.Builder(this@CurrentUserProducts)
-        alertBuilder.setView(alertView)
-        alertBuilder.setCancelable(false)
-        progressDialog = alertBuilder.create()
-        progressDialog.setCanceledOnTouchOutside(false)
-    }
+//    private fun setupCustomProgressDialog() {
+//        val alertView = View.inflate(this@CurrentUserProducts, R.layout.custom_progress_bar,null)
+//
+//        val alertBuilder = AlertDialog.Builder(this@CurrentUserProducts)
+//        alertBuilder.setView(alertView)
+//        alertBuilder.setCancelable(false)
+//        progressDialog = alertBuilder.create()
+//        progressDialog.setCanceledOnTouchOutside(false)
+//    }
 
     @SuppressLint("SetTextI18n")
     private fun getProducts() {
         if (!isMaxData) {
-
-            progressDialog.show()
-            progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
-            progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Loading..."
-            progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
+            currentUserProductsProgressBar.visibility = View.VISIBLE
+//            progressDialog.show()
+//            progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+//            progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Loading..."
+//            progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
 
 //            val query: Query = if (lastResult == null) {
 //                prodRef.orderBy("postDate", Query.Direction.DESCENDING)
@@ -334,10 +541,12 @@ class CurrentUserProducts : AppCompatActivity() {
 //                    Toast.makeText(this, "Last Node = $lastNode", Toast.LENGTH_SHORT).show()
                     isLoading = false
 //                    btnCurrentUserProductsRefresh.isEnabled = true
-                    progressDialog.dismiss()
+//                    progressDialog.dismiss()
+                    currentUserProductsProgressBar.visibility = View.GONE
                 }
                 .addOnFailureListener { e ->
-                    progressDialog.dismiss()
+//                    progressDialog.dismiss()
+                    currentUserProductsProgressBar.visibility = View.GONE
                     isLoading = false
 //                    btnCurrentUserProductsRefresh.isEnabled = true
                     Log.i(TAG, "$e")
@@ -403,6 +612,8 @@ class CurrentUserProducts : AppCompatActivity() {
 
 
     private fun getLastKey(categoryType: String = "All") {
+        currentUserProductsProgressBar.visibility = View.VISIBLE
+
         val query: Query
 
         when (categoryType) {
