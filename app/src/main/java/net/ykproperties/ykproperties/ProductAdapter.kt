@@ -142,9 +142,9 @@ class ProductAdapter (val context: Context, private var productList: MutableList
                 }
                 if (item.pictures.isNotEmpty()) {
                     if (item.pictures[0] != "") {
-                        Glide.with(context).load(item.pictures[0]).into(holder.ivItemsGridV)
+                        Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_land).into(holder.ivItemsGridV)
                     } else {
-                        holder.ivItemsGridV.setImageResource(R.drawable.ic_add_photo)
+                        holder.ivItemsGridV.setImageResource(R.drawable.ic_placeholder_land)
                     }
                 }
             }

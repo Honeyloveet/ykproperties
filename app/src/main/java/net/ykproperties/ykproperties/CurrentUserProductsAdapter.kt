@@ -121,9 +121,9 @@ class CurrentUserProductsAdapter (val context: Context, private var productList:
                 }
                 if (item.pictures.isNotEmpty()) {
                     if (item.pictures[0] != "") {
-                        Glide.with(context).load(item.pictures[0]).into(holder.ivCurrentUserProducts)
+                        Glide.with(context).load(item.pictures[0]).placeholder(R.drawable.ic_placeholder_land).into(holder.ivCurrentUserProducts)
                     } else {
-                        holder.ivCurrentUserProducts.setImageResource(R.drawable.ic_add_photo)
+                        holder.ivCurrentUserProducts.setImageResource(R.drawable.ic_placeholder_land)
                     }
                 }
             }
