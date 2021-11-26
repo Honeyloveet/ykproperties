@@ -2,7 +2,6 @@ package net.ykproperties.ykproperties
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -297,33 +296,7 @@ class AddPost : AppCompatActivity() {
 
         deleteImagesFile()
 
-        val ownerOrSeller = resources.getStringArray(R.array.seller)
-        val arrayAdapterOwnerOrSeller = ArrayAdapter(this, R.layout.drop_down_category, ownerOrSeller)
-        autoComTvCommonOwnerOr.setAdapter(arrayAdapterOwnerOrSeller)
-
-        val fuel = resources.getStringArray(R.array.fuel)
-        val arrayAdapterFuel = ArrayAdapter(this, R.layout.drop_down_category, fuel)
-        autoComTvFuel.setAdapter(arrayAdapterFuel)
-
-        val transmission = resources.getStringArray(R.array.transmission)
-        val arrayAdapterTransmission = ArrayAdapter(this, R.layout.drop_down_category, transmission)
-        autoComTvTransmission.setAdapter(arrayAdapterTransmission)
-
-        val condition = resources.getStringArray(R.array.car_condition)
-        val arrayAdapterCondition = ArrayAdapter(this, R.layout.drop_down_category, condition)
-        autoComTvCondition.setAdapter(arrayAdapterCondition)
-
-        val saleRentExchange = resources.getStringArray(R.array.sale_rent_exchange)
-        val arrayAdapterSaleRentExchange = ArrayAdapter(this, R.layout.drop_down_category, saleRentExchange)
-        autoComTvCommonSaleOr.setAdapter(arrayAdapterSaleRentExchange)
-
-        val make = resources.getStringArray(R.array.make)
-        val arrayAdapterMake = ArrayAdapter(this, R.layout.drop_down_category, make)
-        autoComTvMake.setAdapter(arrayAdapterMake)
-
-        val categories = resources.getStringArray(R.array.categories)
-        val arrayAdapter = ArrayAdapter(this, R.layout.drop_down_category, categories)
-        autoComTvCategories.setAdapter(arrayAdapter)
+        setupControlDropDownLists()
 
         autoComTvCategories.setOnItemClickListener { adapterView, _, i, _ ->
             val value = adapterView.getItemAtPosition(i)
@@ -367,6 +340,37 @@ class AddPost : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         checkInternetConnectionStatus()
+    }
+
+    private fun setupControlDropDownLists() {
+
+        val ownerOrSeller = resources.getStringArray(R.array.seller)
+        val arrayAdapterOwnerOrSeller = ArrayAdapter(this, R.layout.drop_down_category, ownerOrSeller)
+        autoComTvCommonOwnerOr.setAdapter(arrayAdapterOwnerOrSeller)
+
+        val fuel = resources.getStringArray(R.array.fuel)
+        val arrayAdapterFuel = ArrayAdapter(this, R.layout.drop_down_category, fuel)
+        autoComTvFuel.setAdapter(arrayAdapterFuel)
+
+        val transmission = resources.getStringArray(R.array.transmission)
+        val arrayAdapterTransmission = ArrayAdapter(this, R.layout.drop_down_category, transmission)
+        autoComTvTransmission.setAdapter(arrayAdapterTransmission)
+
+        val condition = resources.getStringArray(R.array.car_condition)
+        val arrayAdapterCondition = ArrayAdapter(this, R.layout.drop_down_category, condition)
+        autoComTvCondition.setAdapter(arrayAdapterCondition)
+
+        val saleRentExchange = resources.getStringArray(R.array.sale_rent_exchange)
+        val arrayAdapterSaleRentExchange = ArrayAdapter(this, R.layout.drop_down_category, saleRentExchange)
+        autoComTvCommonSaleOr.setAdapter(arrayAdapterSaleRentExchange)
+
+        val make = resources.getStringArray(R.array.make)
+        val arrayAdapterMake = ArrayAdapter(this, R.layout.drop_down_category, make)
+        autoComTvMake.setAdapter(arrayAdapterMake)
+
+        val categories = resources.getStringArray(R.array.categories)
+        val arrayAdapter = ArrayAdapter(this, R.layout.drop_down_category, categories)
+        autoComTvCategories.setAdapter(arrayAdapter)
     }
 
     private fun checkPermissions() {
@@ -924,7 +928,10 @@ class AddPost : AppCompatActivity() {
         }
     }
 
-    private fun deletePhotosFromInternalStorage(name: String? = null) {
+    /**
+     * Code for later viewing
+     */
+/*    private fun deletePhotosFromInternalStorage(name: String? = null) {
         lifecycleScope.launch {
             val photos = loadPhotosFromInternalStorage()
             if (!name.isNullOrEmpty()) {
@@ -954,9 +961,12 @@ class AddPost : AppCompatActivity() {
                 }
             }
         }
-    }
+    }*/
 
-    private suspend fun loadPhotosFromInternalStorage(): List<InternalStoragePhoto> {
+    /**
+     * Code for later viewing
+     */
+/*    private suspend fun loadPhotosFromInternalStorage(): List<InternalStoragePhoto> {
         return withContext(Dispatchers.IO) {
             val files = getExternalFilesDirs(Environment.DIRECTORY_PICTURES)
 //            val files = storageDir.listFiles()
@@ -975,7 +985,7 @@ class AddPost : AppCompatActivity() {
                 InternalStoragePhoto(it.name, bmp, it.toUri(), it.absolutePath)
             } ?: listOf()
         }
-    }
+    }*/
 
     @Suppress("DEPRECATION")
     private fun savePhotoToInternalStorage(filename: String, imageFileSelected: File?, selectedImage: Int): Boolean {

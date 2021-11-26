@@ -21,7 +21,10 @@ class ProductAdapter (val context: Context, private var productList: MutableList
         fun onItemClick(position: Int)
     }
 
-    val lastItemUid: String
+    /**
+     * Code for later viewing
+     */
+/*    val lastItemUid: String
         get() = productList[productList.size - 1].uid
 
     fun addAll(newProducts:List<ProductsModel>){
@@ -36,7 +39,7 @@ class ProductAdapter (val context: Context, private var productList: MutableList
             productList.clear()
             notifyItemRangeRemoved(0,size)
         }
-    }
+    }*/
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         mListener = listener

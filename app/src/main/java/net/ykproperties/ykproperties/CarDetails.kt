@@ -187,13 +187,17 @@ class CarDetails : AppCompatActivity() {
         if (mileage == 0L) {
             tvKmTitleDetails.isVisible = false
             tvKmDetails.isVisible = false
+        } else {
+            tvKmDetails.text = mileage.toString()
         }
 
-        if (plate == "") {
+        if (plate == "0" || plate == "") {
             tvPlateNoTitleDetails.isVisible = false
             tvPlateNoDetails.isVisible = false
             tvPlateNoDetails.setTextColor(getColor(R.color.white))
 //            tvPlateNoTitleDetails.setTextColor(getColor(R.color.white))
+        } else {
+            tvPlateNoDetails.text = plate
         }
 
         db.collection("products").document("$id")

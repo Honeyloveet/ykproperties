@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/editPostLayout"
     tools:context=".UserProductEdit">
 
     <include
@@ -53,7 +54,7 @@
                         android:layout_marginStart="1dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="1dp"
-                        android:hint="Category*"
+                        android:hint="Category"
                         android:textColorHint="@color/hint_text"
                         app:boxStrokeColor="@color/orange_main"
                         app:endIconTint="@color/orange_main"

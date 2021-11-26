@@ -35,8 +35,8 @@ class CurrentUserProductsAdapter (val context: Context, private var productList:
     fun setOnItemClickListener(listener: OnItemClickListener) {
         mListener = listener
     }
-
-    val lastItemUid: String
+    // code for later viewing
+/*    val lastItemUid: String
         get() = productList[productList.size - 1].uid
 
     fun addAll(newProducts: List<ProductsModel>){
@@ -55,11 +55,7 @@ class CurrentUserProductsAdapter (val context: Context, private var productList:
 
     fun getItemToDelete(position: Int): String {
         return productList[position].uid
-    }
-
-//    override fun getItemId(position: Int): Long {
-//        return productList[position].uid.toLong()
-//    }
+    }*/
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -159,8 +155,8 @@ class CurrentUserProductsAdapter (val context: Context, private var productList:
         val tvCurrentUserProductStatus : TextView = view.findViewById(R.id.tvCurrentUserProductStatus)
         val ivCurrentUserProducts: ImageView = view.findViewById(R.id.ivCurrentUserProducts)
         val checkBoxCurrentUserProductsSold: CheckBox = view.findViewById(R.id.checkBoxCurrentUserProductsSold)
-        val btnCurrentUserProductsDelete: ImageButton = view.findViewById(R.id.btnCurrentUserProductsDelete)
-        val btnCurrentUserProductsEdit: ImageButton = view.findViewById(R.id.btnCurrentUserProductsEdit)
+        private val btnCurrentUserProductsDelete: ImageButton = view.findViewById(R.id.btnCurrentUserProductsDelete)
+        private val btnCurrentUserProductsEdit: ImageButton = view.findViewById(R.id.btnCurrentUserProductsEdit)
 
         init {
             view.setOnClickListener {
