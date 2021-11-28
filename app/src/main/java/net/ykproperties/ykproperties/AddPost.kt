@@ -691,7 +691,7 @@ class AddPost : AppCompatActivity() {
                     "",
                     0,
                     "",
-                    0,
+                    autoComTvMileage.text.toString().toLong(),
                     autoComTvCommonPhone.text.toString().toLong(),
                     imagesUrl,
                     autoComTvPlate.text.toString(),

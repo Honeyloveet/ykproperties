@@ -28,6 +28,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -35,7 +36,10 @@ import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.default
 import id.zelory.compressor.constraint.destination
 import id.zelory.compressor.loadBitmap
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import net.ykproperties.ykproperties.model.ProductsModel
 import net.ykproperties.ykproperties.model.ProductsModelParcelable
 import net.ykproperties.ykproperties.util.ConnectionLiveData
 import net.ykproperties.ykproperties.util.RequestPermissions
@@ -43,12 +47,13 @@ import java.io.File
 import java.io.IOException
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class UserProductEdit : AppCompatActivity() {
 
     //region declarations
     private companion object {
-        private const val TAG = "ProductEdit"
+        private const val TAG = "PRODUCT_EDIT"
     }
 
     private lateinit var requestPermissions: RequestPermissions
@@ -126,6 +131,8 @@ class UserProductEdit : AppCompatActivity() {
     private lateinit var imageOneUriToUpload: Uri
     private lateinit var imageTwoUriToUpload: Uri
 
+    private lateinit var productToEdit: ProductsModelParcelable
+
     //endregion
 
     private val selectPictureLauncherOne = registerForActivityResult(ActivityResultContracts.GetContent()){ uri ->
@@ -198,8 +205,8 @@ class UserProductEdit : AppCompatActivity() {
 
         deleteImagesFile()
 
-        val productToEdit = intent.getParcelableExtra<ProductsModelParcelable>("productToEdit")
-        changeCategoryVisibility(productToEdit?.category!!)
+        productToEdit = intent.getParcelableExtra("productToEdit")!!
+        changeCategoryVisibility(productToEdit.category!!)
         setProductValuesToViews(productToEdit)
 
         toolbar = findViewById(R.id.toolBarProductEdit)
@@ -210,6 +217,11 @@ class UserProductEdit : AppCompatActivity() {
             // on back button press, it will navigate to parent activity
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
+        }
+
+        toolbar.setNavigationOnClickListener {
+            deleteImagesFile()
+            finish()
         }
 
         setupControlDropDownLists()
@@ -224,12 +236,645 @@ class UserProductEdit : AppCompatActivity() {
             selectPictureLauncherTwo.launch("image/*")
         }
 
-        toolbar.setNavigationOnClickListener {
-            deleteImagesFile()
-            finish()
+        btnUpdatePost.setOnClickListener {
+            val isInPutCorrect = checkInputFields(productToEdit.category.toString())
+            if (isInPutCorrect) {
+                btnUpdatePost.isEnabled = false
+                Toast.makeText(this, "Every thing is correct", Toast.LENGTH_SHORT).show()
+
+                progressDialog.show()
+                progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+                progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    updateImagesAndProduct()
+                }
+            }
         }
     }
 
+    private fun updateCarInfo(productToEdit: ProductsModelParcelable, imagesUrl: ArrayList<String> = arrayListOf("")) {
+
+        val itemToUpdate = ProductsModel(
+            productToEdit.uid.toString(),
+            "",
+            etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+            autoComTvMake.text.toString(),
+            autoComTvModel.text.toString(),
+            0,
+            0,
+            "Cars",
+            autoComTvColor.text.toString(),
+            autoComTvCondition.text.toString(),
+            etCommonDesc.text.toString(),
+            autoComTvEngineSize.text.toString().toLong(),
+            autoComTvFuel.text.toString(),
+            autoComTvHouseType.text.toString(),
+            "",
+            0,
+            "",
+            autoComTvMileage.text.toString().toLong(),
+            autoComTvCommonPhone.text.toString().toLong(),
+            imagesUrl,
+            autoComTvPlate.text.toString(),
+            autoComTvCommonSaleOr.text.toString(),
+            productToEdit.reported,
+            productToEdit.reportedNumber,
+            autoComTvCommonOwnerOr.text.toString(),
+            0,
+            autoComTvTransmission.text.toString(),
+            productToEdit.userPosted.toString(),
+            productToEdit.views,
+            autoComTvYear.text.toString().toLong(),
+            productToEdit.sold,
+            productToEdit.postDate)
+        db.collection("products").document(productToEdit.uid.toString()).set(itemToUpdate, SetOptions.merge())
+            .addOnSuccessListener {
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(true)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error writing document", e)
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(false)
+            }
+    }
+
+    private fun updateHouseInfo(productToEdit: ProductsModelParcelable, imagesUrl: ArrayList<String> = arrayListOf("")) {
+        val itemToUpdate = ProductsModel(
+            productToEdit.uid.toString(),
+            "",
+            etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+            "",
+            "",
+            0,
+            0,
+            "House",
+            "",
+            "",
+            etCommonDesc.text.toString(),
+            0,
+            "",
+            autoComTvHouseType.text.toString(),
+            "",
+            0,
+            autoComTvHouseLocation.text.toString(),
+            0,
+            autoComTvCommonPhone.text.toString().toLong(),
+            imagesUrl,
+            "",
+            autoComTvCommonSaleOr.text.toString(),
+            productToEdit.reported,
+            productToEdit.reportedNumber,
+            autoComTvCommonOwnerOr.text.toString(),
+            autoComTvHouseSize.text.toString().toLong(),
+            "",
+            productToEdit.userPosted.toString(),
+            productToEdit.views,
+            0,
+            productToEdit.sold,
+            productToEdit.updateDate)
+        db.collection("products").document(productToEdit.uid.toString()).set(itemToUpdate, SetOptions.merge())
+            .addOnSuccessListener {
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(true)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error writing document", e)
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(false)
+            }
+    }
+
+    private fun updateLandInfo(productToEdit: ProductsModelParcelable, imagesUrl: ArrayList<String> = arrayListOf("")) {
+        val itemToUpdate = ProductsModel(
+            productToEdit.uid.toString(),
+            "",
+            etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+            "",
+            "",
+            0,
+            0,
+            "Land",
+            "",
+            "",
+            etCommonDesc.text.toString(),
+            0,
+            "",
+            "",
+            "",
+            0,
+            autoComTvLandLocation.text.toString(),
+            0,
+            autoComTvCommonPhone.text.toString().toLong(),
+            imagesUrl,
+            "",
+            autoComTvCommonSaleOr.text.toString(),
+            productToEdit.reported,
+            productToEdit.reportedNumber,
+            autoComTvCommonOwnerOr.text.toString(),
+            autoComTvLandSize.text.toString().toLong(),
+            "",
+            productToEdit.userPosted.toString(),
+            productToEdit.views,
+            0,
+            productToEdit.sold,
+            productToEdit.updateDate)
+        db.collection("products").document(productToEdit.uid.toString()).set(itemToUpdate, SetOptions.merge())
+            .addOnSuccessListener {
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(true)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error writing document", e)
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(false)
+            }
+    }
+
+    private fun updateOtherInfo(productToEdit: ProductsModelParcelable, imagesUrl: ArrayList<String> = arrayListOf("")) {
+        val itemToUpdate = ProductsModel(
+            productToEdit.uid.toString(),
+            autoComTvOtherTitle.text.toString(),
+            etCommonPrice.text.toString().filter { it.isDigit() }.toLong(),
+            "",
+            "",
+            0,
+            0,
+            "Other",
+            "",
+            "",
+            etCommonDesc.text.toString(),
+            0,
+            "",
+            "",
+            "",
+            0,
+            "",
+            0,
+            autoComTvCommonPhone.text.toString().toLong(),
+            imagesUrl,
+            "",
+            autoComTvCommonSaleOr.text.toString(),
+            productToEdit.reported,
+            productToEdit.reportedNumber,
+            autoComTvCommonOwnerOr.text.toString(),
+            0,
+            "",
+            productToEdit.userPosted.toString(),
+            productToEdit.views,
+            0,
+            productToEdit.sold,
+            productToEdit.updateDate)
+        db.collection("products").document(productToEdit.uid.toString()).set(itemToUpdate, SetOptions.merge())
+            .addOnSuccessListener {
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(true)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error writing document", e)
+                btnUpdatePost.isEnabled = true
+                progressDialog.dismiss()
+                productUpdateSuccessOrFailedDialog(false)
+            }
+    }
+
+    private suspend fun updateProducts(imagesUrl: ArrayList<String> = arrayListOf("")) {
+        if (pictureOneSelected && pictureTwoSelected) {
+            if (productToEdit.pictures.size > 1) {
+                val deleteSuccess = deleteImagesFromServer("All", productToEdit.pictures)
+                if (deleteSuccess) {
+                    when (productToEdit.category) {
+                        "Other" -> {
+                            updateOtherInfo(productToEdit, imagesUrl)
+                        }
+                        "Land" -> {
+                            updateLandInfo(productToEdit, imagesUrl)
+                        }
+                        "House" -> {
+                            updateLandInfo(productToEdit, imagesUrl)
+                        }
+                        else -> {
+                            updateLandInfo(productToEdit, imagesUrl)
+                        }
+                    }
+                }
+            } else if (productToEdit.pictures.size == 1) {
+                val deleteSuccess = deleteImagesFromServer("One", productToEdit.pictures)
+                if (deleteSuccess) {
+                    when (productToEdit.category) {
+                        "Other" -> {
+                            updateOtherInfo(productToEdit, imagesUrl)
+                        }
+                        "Land" -> {
+                            updateLandInfo(productToEdit, imagesUrl)
+                        }
+                        "House" -> {
+                            updateLandInfo(productToEdit, imagesUrl)
+                        }
+                        else -> {
+                            updateLandInfo(productToEdit, imagesUrl)
+                        }
+                    }
+                }
+            }
+        } else if (pictureOneSelected && productToEdit.pictures[0] != "") {
+            val deleteSuccess = deleteImagesFromServer("One", productToEdit.pictures)
+            if (deleteSuccess) {
+                when (productToEdit.category) {
+                    "Other" -> {
+                        updateOtherInfo(productToEdit, imagesUrl)
+                    }
+                    "Land" -> {
+                        updateLandInfo(productToEdit, imagesUrl)
+                    }
+                    "House" -> {
+                        updateLandInfo(productToEdit, imagesUrl)
+                    }
+                    else -> {
+                        updateLandInfo(productToEdit, imagesUrl)
+                    }
+                }
+            }
+        } else if (pictureTwoSelected && productToEdit.pictures.size > 1) {
+            val deleteSuccess = deleteImagesFromServer("Two", productToEdit.pictures)
+            if (deleteSuccess) {
+                when (productToEdit.category) {
+                    "Other" -> {
+                        updateOtherInfo(productToEdit, imagesUrl)
+                    }
+                    "Land" -> {
+                        updateLandInfo(productToEdit, imagesUrl)
+                    }
+                    "House" -> {
+                        updateLandInfo(productToEdit, imagesUrl)
+                    }
+                    else -> {
+                        updateLandInfo(productToEdit, imagesUrl)
+                    }
+                }
+            }
+        } else {
+            when (productToEdit.category) {
+                "Other" -> {
+                    updateOtherInfo(productToEdit)
+                }
+                "Land" -> {
+                    updateLandInfo(productToEdit)
+                }
+                "House" -> {
+                    updateHouseInfo(productToEdit)
+                }
+                else -> {
+                    updateCarInfo(productToEdit)
+                }
+            }
+        }
+    }
+
+    private suspend fun deleteImagesFromServer(imagesToDelete: String, imagesUrl: ArrayList<String>): Boolean {
+        var result = false
+        when (imagesToDelete) {
+            "All" -> {
+                var imageDeletedCount = 0
+                for (imageUrl in imagesUrl) {
+                    if (imageUrl != "") {
+                        val imageFileName = getImageFileName(imageUrl)
+                        val isDeleteSuccess = deleteSingleImage(imageFileName)
+                        if (isDeleteSuccess) {
+                            imageDeletedCount++
+                            Log.i(TAG, "$imageUrl image deleted successfully!")
+                        } else {
+                            Log.w(TAG, "Failed to deleted $imageUrl!")
+                        }
+                        if (imageDeletedCount == imagesUrl.size) {
+                            result = true
+                            Log.i(TAG, "$imageDeletedCount images deleted successfully!")
+                        } else result = false
+                    }
+                }
+            }
+            "One" -> {
+                if (imagesUrl[0] != "") {
+                    val imageFileName = getImageFileName(imagesUrl[0])
+                    val isDeleteSuccess = deleteSingleImage(imageFileName)
+                    if (isDeleteSuccess) {
+                        result = true
+                        Log.i(TAG, "${imagesUrl[0]} image deleted successfully!")
+                    } else {
+                        result = false
+                        Log.w(TAG, "Failed to deleted ${imagesUrl[0]}!")
+                    }
+                } else {
+                    return true
+                }
+            }
+            "Two" -> {
+                if (imagesUrl.size > 1) {
+                    val imageFileName = getImageFileName(imagesUrl[1])
+                    val isDeleteSuccess = deleteSingleImage(imageFileName)
+                    if (isDeleteSuccess) {
+                        result = true
+                        Log.i(TAG, "${imagesUrl[1]} image deleted successfully!")
+                    } else {
+                        result = false
+                        Log.w(TAG, "Failed to deleted ${imagesUrl[1]}!")
+                    }
+                }
+            }
+        }
+        return result
+    }
+
+    private suspend fun deleteSingleImage(imageFileName: String): Boolean {
+        var result = false
+        val photoRef = storageRef.child("images/$imageFileName")
+        photoRef.delete()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    result = true
+                    Log.i(TAG, "$imageFileName deleted successfully!")
+                } else {
+                    result = false
+                    Log.w(TAG, "Failed to deleted $imageFileName!", it.exception)
+                }
+            }.await()
+        return result
+    }
+
+    @SuppressLint("SetTextI18n")
+    private suspend fun updateImagesAndProduct() {
+        if (pictureOneSelected || pictureTwoSelected) {
+            var imageUploadCount = 0
+            for (image in imagesUriToUpload) {
+                val photoRef = storageRef.child("images/${System.currentTimeMillis()}-photo.jpg")
+                photoRef.putFile(image)
+                    .addOnSuccessListener {
+                        photoRef.downloadUrl
+                            .addOnSuccessListener { url ->
+                                imagesUriString.add(url.toString())
+                                imageUploadCount++
+                                if (imageUploadCount == imagesUriToUpload.size) {
+                                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Uploading Data..."
+                                    val imageURLs = getImagesUrlsToUpdate(imagesUriString)
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        updateProducts(imageURLs)
+                                    }
+                                }
+                            }
+                            .addOnFailureListener {
+                                Log.e(TAG,"Failed to upload ${imagesUriToUpload.size - imageUploadCount} out of ${imagesUriToUpload.size}")
+                            }
+                    }
+            }
+        } else {
+            updateProducts()
+        }
+    }
+
+    private fun getImagesUrlsToUpdate(imagesUrls: ArrayList<String>): ArrayList<String> {
+        var imageURLs = imagesUrls
+        if (imageURLs.isNullOrEmpty()) {
+            imageURLs = productToEdit.pictures
+        } else if (imageURLs.size == 1) {
+            if (productToEdit.pictures.size > 1 && pictureTwoSelected) {
+                imageURLs.add(productToEdit.pictures[0])
+                return imageURLs
+            } else if (productToEdit.pictures.size > 1 && pictureOneSelected) {
+                imageURLs.add(productToEdit.pictures[1])
+                return imageURLs
+            } else if (productToEdit.pictures.size == 1 && productToEdit.pictures[0] != "" && pictureTwoSelected){
+                imageURLs.add(productToEdit.pictures[0])
+                return imageURLs
+            } else if (productToEdit.pictures.size == 1 && productToEdit.pictures[0] != "" && pictureOneSelected){
+                imageURLs.add(productToEdit.pictures[0])
+            }
+        }
+        return imageURLs
+    }
+
+    // gets product image file name in firestore from url
+    private fun getImageFileName(imageURL: String): String {
+        var imageFileName = ""
+        val startIndex = imageURL.indexOfAny(arrayListOf("images%"),0)
+        val endIndex = imageURL.indexOfAny(arrayListOf("jpg"),0)
+        for (i in startIndex+9..endIndex+2) {
+            imageFileName += imageURL[i]
+        }
+        return imageFileName
+    }
+
+    private fun checkInputFields(category: String): Boolean {
+        when(category) {
+            "House" -> {
+                if (!pictureOneSelected && !pictureTwoSelected) {
+                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvHouseType.text.isBlank()) {
+                    Toast.makeText(this, "Please input House type!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvHouseSize.text.isBlank()) {
+                    Toast.makeText(this, "Please input House Size in Meter Square!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvHouseLocation.text.isBlank()) {
+                    Toast.makeText(this, "Please input Location of the house!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if you are Owner or Broker of the House!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonSaleOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if the House is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonPrice.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input the price of the House in Birr!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonDesc.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input Description of the House!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonPhone.text.isBlank()) {
+                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else {
+                    return true
+                }
+            }
+            "Cars" -> {
+                if (!pictureOneSelected && !pictureTwoSelected) {
+                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvMake.text.isBlank()) {
+                    Toast.makeText(this, "Please select the Make/Brand of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvModel.text.isBlank()) {
+                    Toast.makeText(this, "Please input Model of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvYear.text.isBlank()) {
+                    Toast.makeText(this, "Please input year of manufactured of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvColor.text.isBlank()) {
+                    Toast.makeText(this, "Please input Color of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCondition.text.isBlank()) {
+                    Toast.makeText(this, "Please select the Condition of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvTransmission.text.isBlank()) {
+                    Toast.makeText(this, "Please select the Transmission type of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvMileage.text.isBlank()) {
+                    autoComTvMileage.setText("0")
+
+                } else if (autoComTvFuel.text.isBlank()) {
+                    Toast.makeText(this, "Please select Fuel type of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvPlate.text.isBlank()) {
+                    autoComTvPlate.setText("0")
+
+                } else if (autoComTvEngineSize.text.isBlank()) {
+                    autoComTvEngineSize.setText("0")
+
+                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if you are Owner or Broker of the Car!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonSaleOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if the Car is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonPrice.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input the price of the Car in Birr!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonDesc.text!!.isBlank()) {
+                    etCommonDesc.setText("")
+//                    return false
+                } else if (autoComTvCommonPhone.text.isBlank()) {
+                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else {
+                    return true
+                }
+            }
+            "Land" -> {
+//                if (!pictureOneSelected && !pictureTwoSelected) {
+//                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+//                    return false
+//                } else
+                when {
+                    autoComTvLandLocation.text.isBlank() -> {
+                        Toast.makeText(this, "Please input the Location of the Land!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvLandSize.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Land Size in Meter Square!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonOwnerOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if you are Owner or Broker of the Land!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonSaleOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if the Land is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonPrice.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input the price of the Land in Birr!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonDesc.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input Description of the Land!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonPhone.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    else -> {
+                        return true
+                    }
+                }
+            }
+            "Other" -> {
+                if (!pictureOneSelected && !pictureTwoSelected) {
+                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvOtherTitle.text.isBlank()) {
+                    Toast.makeText(this, "Please input the Item type!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if you are Owner or Broker of the Item!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonSaleOr.text.isBlank()) {
+                    Toast.makeText(this, "Please select if the Item is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonPrice.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input the price of the Item in Birr!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (etCommonDesc.text!!.isBlank()) {
+                    Toast.makeText(this, "Please input Description of the Item!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else if (autoComTvCommonPhone.text.isBlank()) {
+                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                    return false
+                } else {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun productUpdateSuccessOrFailedDialog(uploadSuccess: Boolean) {
+        when {
+            uploadSuccess -> {
+                val dialog = MaterialDialog(this)
+                    .noAutoDismiss()
+                    .cancelable(false)
+                    .cornerRadius(14f)
+                    .customView(R.layout.update_success_or_failed_dialog)
+                dialog.findViewById<TextView>(R.id.tvUpdateStatusTitle).text = "Item Update Success."
+                dialog.findViewById<TextView>(R.id.tvUpdateStatusTitle).setTextColor(getColor(R.color.orange_main))
+                dialog.findViewById<TextView>(R.id.tvUpdateStatusQuestion).text = "Press ok to continue."
+                dialog.findViewById<Button>(R.id.btnUpdateStatusYes).visibility = View.GONE
+                dialog.findViewById<Button>(R.id.btnUpdateStatusNo).visibility = View.GONE
+                dialog.findViewById<Button>(R.id.btnUpdateStatusOk).visibility = View.VISIBLE
+                dialog.findViewById<Button>(R.id.btnUpdateStatusOk).setOnClickListener {
+                    deleteImagesFile()
+                    finish()
+                    dialog.dismiss()
+                }
+                dialog.show()
+            }
+            else -> {
+                val dialog = MaterialDialog(this)
+                    .noAutoDismiss()
+                    .cancelable(false)
+                    .cornerRadius(14f)
+                    .customView(R.layout.update_success_or_failed_dialog)
+                dialog.findViewById<TextView>(R.id.tvUpdateStatusTitle).text = "Item Update Failed!!!"
+                dialog.findViewById<TextView>(R.id.tvUpdateStatusTitle).setTextColor(getColor(R.color.red))
+                dialog.findViewById<TextView>(R.id.tvUpdateStatusQuestion).text = "Do you want to try again?"
+                dialog.findViewById<Button>(R.id.btnUpdateStatusYes).visibility = View.VISIBLE
+                dialog.findViewById<Button>(R.id.btnUpdateStatusNo).visibility = View.VISIBLE
+                dialog.findViewById<Button>(R.id.btnUpdateStatusOk).visibility = View.GONE
+                dialog.findViewById<Button>(R.id.btnUpdateStatusYes).setOnClickListener {
+                    dialog.dismiss()
+                }
+                dialog.findViewById<Button>(R.id.btnUpdateStatusNo).setOnClickListener {
+                    deleteImagesFile()
+                    finish()
+                    dialog.dismiss()
+                }
+                dialog.show()
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
     private fun savePhotoToInternalStorage(filename: String, imageFileSelected: File?, selectedImage: Int): Boolean {
         try {
             imageFileSelected?.let { imageFile ->

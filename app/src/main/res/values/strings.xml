@@ -32,6 +32,9 @@
     <string name="order_asc">ASC</string>
     <string name="order_desc">DESC</string>
     <string name="sign_in_to_ykproperties">Sign in to YKProperties</string>
+    <string name="permission_storage_denied">In order to use this function you have to allow access permission for storage and photos. Do you want to try again?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string-array name="categories">
         <item>House</item>

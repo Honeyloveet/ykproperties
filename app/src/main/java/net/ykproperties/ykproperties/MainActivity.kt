@@ -198,11 +198,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 //        svSearchProducts.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
 //            override fun onQueryTextSubmit(query: String?): Boolean {
-//                TODO("Not yet implemented")
+//
 //            }
 //
 //            override fun onQueryTextChange(newText: String?): Boolean {
-//                TODO("Not yet implemented")
+//
 //            }
 //
 //        })
