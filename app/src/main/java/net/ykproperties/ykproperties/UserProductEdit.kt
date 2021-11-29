@@ -674,89 +674,112 @@ class UserProductEdit : AppCompatActivity() {
     private fun checkInputFields(category: String): Boolean {
         when(category) {
             "House" -> {
-                if (autoComTvHouseType.text.isBlank()) {
-                    Toast.makeText(this, "Please input House type!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvHouseSize.text.isBlank()) {
-                    Toast.makeText(this, "Please input House Size in Meter Square!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvHouseLocation.text.isBlank()) {
-                    Toast.makeText(this, "Please input Location of the house!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if you are Owner or Broker of the House!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonSaleOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if the House is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonPrice.text!!.isBlank()) {
-                    Toast.makeText(this, "Please input the price of the House in Birr!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonDesc.text!!.isBlank()) {
-                    Toast.makeText(this, "Please input Description of the House!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonPhone.text.isBlank()) {
-                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else {
-                    return true
+                when {
+                    autoComTvHouseType.text.isBlank() -> {
+                        Toast.makeText(this, "Please input House type!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvHouseSize.text.isBlank() -> {
+                        Toast.makeText(this, "Please input House Size in Meter Square!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvHouseLocation.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Location of the house!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonOwnerOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if you are Owner or Broker of the House!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonSaleOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if the House is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonPrice.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input the price of the House in Birr!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonDesc.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input Description of the House!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonPhone.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    else -> {
+                        return true
+                    }
                 }
             }
             "Cars" -> {
-                if (autoComTvMake.text.isBlank()) {
-                    Toast.makeText(this, "Please select the Make/Brand of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvModel.text.isBlank()) {
-                    Toast.makeText(this, "Please input Model of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvYear.text.isBlank()) {
-                    Toast.makeText(this, "Please input year of manufactured of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvColor.text.isBlank()) {
-                    Toast.makeText(this, "Please input Color of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCondition.text.isBlank()) {
-                    Toast.makeText(this, "Please select the Condition of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvTransmission.text.isBlank()) {
-                    Toast.makeText(this, "Please select the Transmission type of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvMileage.text.isBlank()) {
-                    autoComTvMileage.setText("0")
+                when {
+                    autoComTvMake.text.isBlank() -> {
+                        Toast.makeText(this, "Please select the Make/Brand of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvModel.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Model of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvYear.text.isBlank() -> {
+                        Toast.makeText(this, "Please input year of manufactured of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvColor.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Color of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCondition.text.isBlank() -> {
+                        Toast.makeText(this, "Please select the Condition of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvTransmission.text.isBlank() -> {
+                        Toast.makeText(this, "Please select the Transmission type of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvMileage.text.isBlank() -> {
+                        autoComTvMileage.setText("0")
 
-                } else if (autoComTvFuel.text.isBlank()) {
-                    Toast.makeText(this, "Please select Fuel type of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvPlate.text.isBlank()) {
-                    autoComTvPlate.setText("0")
+                    }
+                    autoComTvFuel.text.isBlank() -> {
+                        Toast.makeText(this, "Please select Fuel type of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvPlate.text.isBlank() -> {
+                        autoComTvPlate.setText("0")
 
-                } else if (autoComTvEngineSize.text.isBlank()) {
-                    autoComTvEngineSize.setText("0")
+                    }
+                    autoComTvEngineSize.text.isBlank() -> {
+                        autoComTvEngineSize.setText("0")
 
-                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if you are Owner or Broker of the Car!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonSaleOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if the Car is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonPrice.text!!.isBlank()) {
-                    Toast.makeText(this, "Please input the price of the Car in Birr!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonDesc.text!!.isBlank()) {
-                    etCommonDesc.setText("")
-//                    return false
-                } else if (autoComTvCommonPhone.text.isBlank()) {
-                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else {
-                    return true
+                    }
+                    autoComTvCommonOwnerOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if you are Owner or Broker of the Car!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonSaleOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if the Car is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonPrice.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input the price of the Car in Birr!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonDesc.text!!.isBlank() -> {
+                        etCommonDesc.setText("")
+            //                    return false
+                    }
+                    autoComTvCommonPhone.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    else -> {
+                        return true
+                    }
                 }
             }
             "Land" -> {
-//                if (!pictureOneSelected && !pictureTwoSelected) {
-//                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
-//                    return false
-//                } else
                 when {
                     autoComTvLandLocation.text.isBlank() -> {
                         Toast.makeText(this, "Please input the Location of the Land!", Toast.LENGTH_SHORT).show()
@@ -793,26 +816,34 @@ class UserProductEdit : AppCompatActivity() {
             }
             "Other" -> {
 
-                if (autoComTvOtherTitle.text.isBlank()) {
-                    Toast.makeText(this, "Please input the Item type!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonOwnerOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if you are Owner or Broker of the Item!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonSaleOr.text.isBlank()) {
-                    Toast.makeText(this, "Please select if the Item is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonPrice.text!!.isBlank()) {
-                    Toast.makeText(this, "Please input the price of the Item in Birr!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (etCommonDesc.text!!.isBlank()) {
-                    Toast.makeText(this, "Please input Description of the Item!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvCommonPhone.text.isBlank()) {
-                    Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else {
-                    return true
+                when {
+                    autoComTvOtherTitle.text.isBlank() -> {
+                        Toast.makeText(this, "Please input the Item type!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonOwnerOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if you are Owner or Broker of the Item!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonSaleOr.text.isBlank() -> {
+                        Toast.makeText(this, "Please select if the Item is for sale/exchange or rent!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonPrice.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input the price of the Item in Birr!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    etCommonDesc.text!!.isBlank() -> {
+                        Toast.makeText(this, "Please input Description of the Item!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    autoComTvCommonPhone.text.isBlank() -> {
+                        Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    else -> {
+                        return true
+                    }
                 }
             }
         }
