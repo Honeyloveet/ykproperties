@@ -22,7 +22,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
-import com.cottacush.android.currencyedittext.CurrencyInputWatcher
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -41,6 +40,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ykproperties.ykproperties.model.ProductsModel
 import net.ykproperties.ykproperties.util.ConnectionLiveData
+import net.ykproperties.ykproperties.util.PriceInputWatcher
 import net.ykproperties.ykproperties.util.RequestPermissions
 import java.io.File
 import java.io.IOException
@@ -222,10 +222,80 @@ class AddPost : AppCompatActivity() {
 
         auth = Firebase.auth
 
-//        storage = Firebase.storage
+        setupControlViews()
 
-//        storageRef = storage.reference
+        toolbar = findViewById(R.id.toolBarDetails)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            title = "Add New Post"
+            // show back button on toolbar
+            // on back button press, it will navigate to parent activity
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+        }
+        toolbar.setNavigationOnClickListener {
+            deleteImagesFile()
+            finish()
+        }
 
+        setupCustomProgressDialog()
+
+        checkPermissions()
+
+//        checkInternetConnectionStatus()
+
+        deleteImagesFile()
+
+        setupControlDropDownLists()
+
+        autoComTvCategories.setOnItemClickListener { adapterView, _, i, _ ->
+            val value = adapterView.getItemAtPosition(i)
+//            Toast.makeText(this, value.toString(), Toast.LENGTH_LONG).show()
+            changeCategoryVisibility(value.toString())
+            autoComTvCategories.setText(value.toString())
+            setupControlDropDownLists()
+        }
+
+//        etCommonPrice.addTextChangedListener(CurrencyInputWatcher(etCommonPrice,"Birr ", Locale.getDefault()))
+        etCommonPrice.addTextChangedListener(PriceInputWatcher(etCommonPrice,"Birr ", Locale.getDefault()))
+
+        ivPhoto1.setOnClickListener {
+            selectPictureLauncherOne.launch("image/*")
+        }
+
+        ivPhoto2.setOnClickListener {
+            selectPictureLauncherTwo.launch("image/*")
+        }
+
+        btnAddPost.setOnClickListener {
+
+            val isInPutCorrect = checkInputFields()
+            if (isInPutCorrect) {
+                btnAddPost.isEnabled = false
+                Toast.makeText(this, "Every thing is correct", Toast.LENGTH_SHORT).show()
+                if (pictureOneSelected || pictureTwoSelected) {
+                    progressDialog.show()
+                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+                    progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
+                    uploadImages()
+                } else {
+                    progressDialog.show()
+                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
+                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Uploading Data..."
+                    progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
+                    uploadProducts()
+                }
+            }
+        }
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        checkInternetConnectionStatus()
+    }
+
+    private fun setupControlViews() {
         btnAddPost = findViewById(R.id.btnAddPost)
 
         tvAddPhoto = findViewById(R.id.tvAddPhoto)
@@ -273,73 +343,6 @@ class AddPost : AppCompatActivity() {
         cvOther.isVisible = false
 
         cvCommon.isVisible = false
-
-        toolbar = findViewById(R.id.toolBarDetails)
-        setSupportActionBar(toolbar)
-        supportActionBar?.apply {
-            title = "Add New Post"
-            // show back button on toolbar
-            // on back button press, it will navigate to parent activity
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowHomeEnabled(true)
-        }
-        toolbar.setNavigationOnClickListener {
-            deleteImagesFile()
-            finish()
-        }
-
-        setupCustomProgressDialog()
-
-        checkPermissions()
-
-//        checkInternetConnectionStatus()
-
-        deleteImagesFile()
-
-        setupControlDropDownLists()
-
-        autoComTvCategories.setOnItemClickListener { adapterView, _, i, _ ->
-            val value = adapterView.getItemAtPosition(i)
-//            Toast.makeText(this, value.toString(), Toast.LENGTH_LONG).show()
-            changeCategoryVisibility(value.toString())
-        }
-
-        etCommonPrice.addTextChangedListener(CurrencyInputWatcher(etCommonPrice,"Birr ", Locale.getDefault()))
-
-        ivPhoto1.setOnClickListener {
-            selectPictureLauncherOne.launch("image/*")
-        }
-
-        ivPhoto2.setOnClickListener {
-            selectPictureLauncherTwo.launch("image/*")
-        }
-
-        btnAddPost.setOnClickListener {
-
-            val isInPutCorrect = checkInputFields()
-            if (isInPutCorrect) {
-                btnAddPost.isEnabled = false
-                Toast.makeText(this, "Every thing is correct", Toast.LENGTH_SHORT).show()
-                if (pictureOneSelected || pictureTwoSelected) {
-                    progressDialog.show()
-                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
-                    progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
-                    uploadImages()
-                } else {
-                    progressDialog.show()
-                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
-                    progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Uploading Data..."
-                    progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
-                    uploadProducts()
-                }
-            }
-        }
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-        checkInternetConnectionStatus()
     }
 
     private fun setupControlDropDownLists() {
@@ -1129,7 +1132,7 @@ class AddPost : AppCompatActivity() {
         autoComTvCommonSaleOr.setText("")
         autoComTvCommonPhone.setText("")
         etCommonDesc.setText("")
-        etCommonPrice.setText("")
+        etCommonPrice.text = null
         autoComTvLandLocation.setText("")
         autoComTvLandSize.setText("")
         autoComTvHouseLocation.setText("")
@@ -1169,6 +1172,8 @@ class AddPost : AppCompatActivity() {
                 cvLand.isVisible = false
                 cvOther.isVisible = false
                 cvCommon.isVisible = true
+                clearImageSelection()
+                clearInputFields()
             }
             "House" -> {
                 textInputLayoutCommonDesc.hint = "Description*"
@@ -1180,6 +1185,8 @@ class AddPost : AppCompatActivity() {
                 cvLand.isVisible = false
                 cvOther.isVisible = false
                 cvCommon.isVisible = true
+                clearImageSelection()
+                clearInputFields()
             }
             "Land" -> {
                 textInputLayoutCommonDesc.hint = "Description*"
@@ -1191,6 +1198,8 @@ class AddPost : AppCompatActivity() {
                 cvLand.isVisible = true
                 cvOther.isVisible = false
                 cvCommon.isVisible = true
+                clearImageSelection()
+                clearInputFields()
             }
             "Other" -> {
                 textInputLayoutCommonDesc.hint = "Description*"
@@ -1202,6 +1211,8 @@ class AddPost : AppCompatActivity() {
                 cvLand.isVisible = false
                 cvOther.isVisible = true
                 cvCommon.isVisible = true
+                clearImageSelection()
+                clearInputFields()
             }
             "" -> {
                 textInputLayoutCommonDesc.hint = "Description*"
@@ -1213,6 +1224,8 @@ class AddPost : AppCompatActivity() {
                 cvLand.isVisible = false
                 cvOther.isVisible = false
                 cvCommon.isVisible = false
+                clearImageSelection()
+                clearInputFields()
             }
         }
     }

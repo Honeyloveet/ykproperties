@@ -1,4 +1,4 @@
-package net.ykproperties.ykproperties
+package net.ykproperties.ykproperties.util
 
 import android.content.Context
 import android.graphics.Canvas
@@ -8,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.core.content.ContextCompat
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-
-
+import net.ykproperties.ykproperties.R
 
 
 abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
