@@ -201,7 +201,7 @@ class UserProductEdit : AppCompatActivity() {
 
         checkPermissions()
 
-        checkInternetConnectionStatus()
+//        checkInternetConnectionStatus()
 
         deleteImagesFile()
 
@@ -982,17 +982,17 @@ class UserProductEdit : AppCompatActivity() {
     private fun checkInternetConnectionStatus() {
         networkConnectionStatus.observe(this, { isConnected ->
 
-            if (!isConnected) {
-                val snackBar = Snackbar.make(
-                    editPostLayout,
-                    "No Internet Connection!",
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                snackBar.setAction("Retry"){
-                    snackBar.dismiss()
-                    checkInternetConnectionStatus()
-                }.show()
-            }
+//            if (!isConnected) {
+//                val snackBar = Snackbar.make(
+//                    editPostLayout,
+//                    "No Internet Connection!",
+//                    Snackbar.LENGTH_INDEFINITE
+//                )
+//                snackBar.setAction("Retry"){
+//                    snackBar.dismiss()
+//                    checkInternetConnectionStatus()
+//                }.show()
+//            }
 
         })
     }
@@ -1241,6 +1241,7 @@ class UserProductEdit : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        deleteImagesFile()
         checkInternetConnectionStatus()
     }
 

@@ -82,7 +82,7 @@ class CurrentUserProducts : AppCompatActivity() {
         setContentView(R.layout.activity_current_user_products)
 
         networkConnectionStatus = ConnectionLiveData(applicationContext)
-        checkInternetConnectionStatus()
+//        checkInternetConnectionStatus()
 
         currentUserProductsLayout = findViewById(R.id.currentUserProductsLayout)
 
@@ -465,17 +465,17 @@ class CurrentUserProducts : AppCompatActivity() {
     private fun checkInternetConnectionStatus() {
         networkConnectionStatus.observe(this, { isConnected ->
 
-            if (!isConnected) {
-                val snackBar = Snackbar.make(
-                    currentUserProductsLayout,
-                    "No Internet Connection!",
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                snackBar.setAction("Retry") {
-                    snackBar.dismiss()
-                    checkInternetConnectionStatus()
-                }.show()
-            }
+//            if (!isConnected) {
+//                val snackBar = Snackbar.make(
+//                    currentUserProductsLayout,
+//                    "No Internet Connection!",
+//                    Snackbar.LENGTH_INDEFINITE
+//                )
+//                snackBar.setAction("Retry") {
+//                    snackBar.dismiss()
+//                    checkInternetConnectionStatus()
+//                }.show()
+//            }
 
         })
     }

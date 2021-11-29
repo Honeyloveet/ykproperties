@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
 
         networkConnectionStatus = ConnectionLiveData(applicationContext)
-        checkInternetConnectionStatus()
+//        checkInternetConnectionStatus()
 
         auth = Firebase.auth
 
@@ -165,11 +165,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         createGoogleRequest()
 
-        if (NetworkVariables.isNetworkConnected) {
-            getLastKey()
-        } else {
-            showManualConnectionSnackBar()
-        }
+//        if (NetworkVariables.isNetworkConnected) {
+//            getLastKey()
+//        } else {
+//            showManualConnectionSnackBar("getLastKey")
+//        }
 
         getLastKey()
 
@@ -180,16 +180,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         adapter = ProductAdapter(this, products)
         rvItems.adapter = adapter
 
-        if (NetworkVariables.isNetworkConnected){
-            //Do something when network is connected
-            Log.d("C-Manager", "Internet Connected From NetworkVariables.")
-            getEveryProduct()
-        }
-        else {
-            showManualConnectionSnackBar()
-            //Do something else when network is not connected
-            Log.d("C-Manager", "Internet Disconnected! From NetworkVariables.")
-        }
+//        if (NetworkVariables.isNetworkConnected){
+//            //Do something when network is connected
+//            Log.d("C-Manager", "Internet Connected From NetworkVariables.")
+//            getEveryProduct()
+//        }
+//        else {
+//            showManualConnectionSnackBar("getEveryProduct")
+//            //Do something else when network is not connected
+//            Log.d("C-Manager", "Internet Disconnected! From NetworkVariables.")
+//        }
+
+        getEveryProduct()
 //        getAllProducts()
 //        getProductsData("All")
 //        getProductsList("All")
@@ -506,21 +508,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun checkInternetConnectionStatus() {
         networkConnectionStatus.observe(this, { isConnected ->
-            if (!isConnected) {
-                showLiveDataConnectionSnackBar()
-                Log.d("C-Manager", "No Internet Connection!")
-            } else {
-                Log.d("C-Manager", "Has Internet Connection!")
-            }
+//            if (!isConnected) {
+//                showLiveDataConnectionSnackBar()
+//                Log.d("C-Manager", "No Internet Connection!")
+//            } else {
+//                Log.d("C-Manager", "Has Internet Connection!")
+//            }
         })
 
     }
 
-    private fun checkManualConnectionStatus() {
-        if (!NetworkVariables.isNetworkConnected){
-            showManualConnectionSnackBar()
+    private fun checkManualConnectionStatus(function: String) {
+        if (NetworkVariables.isNetworkConnected){
+            when (function) {
+                "getLastKey" -> {
+                    getLastKey()
+                }
+                "getEveryProduct" -> {
+                    getEveryProduct()
+                }
+            }
         } else {
-//            TODO("resume operation when internet connection is available")
+            showManualConnectionSnackBar(function)
         }
     }
 
@@ -536,7 +545,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }.show()
     }
 
-    private fun showManualConnectionSnackBar() {
+    private fun showManualConnectionSnackBar(function: String) {
         val snackBar = Snackbar.make(
             drawerLayout,
             "No Internet Connection!",
@@ -544,7 +553,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         snackBar.setAction("Retry") {
             snackBar.dismiss()
-            checkManualConnectionStatus()
+            checkManualConnectionStatus(function)
         }.show()
     }
 

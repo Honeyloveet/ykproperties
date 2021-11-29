@@ -14,14 +14,14 @@ object DoesNetworkHaveInternet {
     // Make sure to execute this on a background thread.
     fun execute(socketFactory: SocketFactory): Boolean {
         return try{
-            Log.d("APP PING", "PINGING google.")
+            Log.d("INTERNET-PING", "PINGING google.")
             val socket = socketFactory.createSocket() ?: throw IOException("Socket is null.")
             socket.connect(InetSocketAddress("8.8.8.8", 53), 1500)
             socket.close()
-            Log.d("APP PING", "PING success.")
+            Log.d("INTERNET-PING", "PING success.")
             true
         }catch (e: IOException){
-            Log.e("APP PING", "No internet connection. $e")
+            Log.e("INTERNET-PING", "No internet connection. $e")
             false
         }
     }

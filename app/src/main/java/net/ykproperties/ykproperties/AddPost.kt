@@ -292,7 +292,7 @@ class AddPost : AppCompatActivity() {
 
         checkPermissions()
 
-        checkInternetConnectionStatus()
+//        checkInternetConnectionStatus()
 
         deleteImagesFile()
 
@@ -403,17 +403,17 @@ class AddPost : AppCompatActivity() {
     private fun checkInternetConnectionStatus() {
         networkConnectionStatus.observe(this, { isConnected ->
 
-            if (!isConnected) {
-                val snackBar = Snackbar.make(
-                    addPostLayout,
-                    "No Internet Connection!",
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                snackBar.setAction("Retry"){
-                    snackBar.dismiss()
-                    checkInternetConnectionStatus()
-                }.show()
-            }
+//            if (!isConnected) {
+//                val snackBar = Snackbar.make(
+//                    addPostLayout,
+//                    "No Internet Connection!",
+//                    Snackbar.LENGTH_INDEFINITE
+//                )
+//                snackBar.setAction("Retry"){
+//                    snackBar.dismiss()
+//                    checkInternetConnectionStatus()
+//                }.show()
+//            }
 
         })
     }
