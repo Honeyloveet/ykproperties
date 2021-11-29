@@ -524,16 +524,16 @@ class UserProductEdit : AppCompatActivity() {
         } else {
             when (productToEdit.category) {
                 "Other" -> {
-                    updateOtherInfo(productToEdit)
+                    updateOtherInfo(productToEdit, productToEdit.pictures)
                 }
                 "Land" -> {
-                    updateLandInfo(productToEdit)
+                    updateLandInfo(productToEdit, productToEdit.pictures)
                 }
                 "House" -> {
-                    updateHouseInfo(productToEdit)
+                    updateHouseInfo(productToEdit, productToEdit.pictures)
                 }
                 else -> {
-                    updateCarInfo(productToEdit)
+                    updateCarInfo(productToEdit, productToEdit.pictures)
                 }
             }
         }
@@ -635,7 +635,7 @@ class UserProductEdit : AppCompatActivity() {
                     }
             }
         } else {
-            updateProducts()
+            updateProducts(productToEdit.pictures)
         }
     }
 
@@ -674,10 +674,7 @@ class UserProductEdit : AppCompatActivity() {
     private fun checkInputFields(category: String): Boolean {
         when(category) {
             "House" -> {
-                if (!pictureOneSelected && !pictureTwoSelected) {
-                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvHouseType.text.isBlank()) {
+                if (autoComTvHouseType.text.isBlank()) {
                     Toast.makeText(this, "Please input House type!", Toast.LENGTH_SHORT).show()
                     return false
                 } else if (autoComTvHouseSize.text.isBlank()) {
@@ -706,10 +703,7 @@ class UserProductEdit : AppCompatActivity() {
                 }
             }
             "Cars" -> {
-                if (!pictureOneSelected && !pictureTwoSelected) {
-                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvMake.text.isBlank()) {
+                if (autoComTvMake.text.isBlank()) {
                     Toast.makeText(this, "Please select the Make/Brand of the Car!", Toast.LENGTH_SHORT).show()
                     return false
                 } else if (autoComTvModel.text.isBlank()) {
@@ -798,10 +792,8 @@ class UserProductEdit : AppCompatActivity() {
                 }
             }
             "Other" -> {
-                if (!pictureOneSelected && !pictureTwoSelected) {
-                    Toast.makeText(this, "Please Select at list one image!!", Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (autoComTvOtherTitle.text.isBlank()) {
+
+                if (autoComTvOtherTitle.text.isBlank()) {
                     Toast.makeText(this, "Please input the Item type!", Toast.LENGTH_SHORT).show()
                     return false
                 } else if (autoComTvCommonOwnerOr.text.isBlank()) {
