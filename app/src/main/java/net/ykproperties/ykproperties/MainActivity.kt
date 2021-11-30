@@ -39,6 +39,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import net.ykproperties.ykproperties.model.ProductsModel
+import net.ykproperties.ykproperties.model.ProductsModelParcelable
 import net.ykproperties.ykproperties.util.ConnectionLiveData
 import net.ykproperties.ykproperties.util.NetworkVariables
 import java.util.*
@@ -210,93 +211,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        })
         adapter.setOnItemClickListener(object : ProductAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-//                Toast.makeText(this@MainActivity,"You Clicked on item no. $position",Toast.LENGTH_SHORT).show()
-                when (this@MainActivity.products[position].category) {
-                    "Cars" -> {
-                        val intent = Intent(this@MainActivity, CarDetails::class.java)
-                        intent.putExtra("id", this@MainActivity.products[position].uid)
-                        intent.putExtra("make", this@MainActivity.products[position].make)
-                        intent.putExtra("model", this@MainActivity.products[position].model)
-                        intent.putExtra("price", this@MainActivity.products[position].price)
-                        intent.putExtra("imgUrls",products[position].pictures)
-                        intent.putExtra("category", this@MainActivity.products[position].category)
-                        intent.putExtra("description", this@MainActivity.products[position].description)
-                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
-                        intent.putExtra("condition", this@MainActivity.products[position].condition)
-                        intent.putExtra("year", this@MainActivity.products[position].year)
-                        intent.putExtra("color", this@MainActivity.products[position].color)
-                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
-                        intent.putExtra("seller", this@MainActivity.products[position].seller)
-                        intent.putExtra("transmission", this@MainActivity.products[position].transmission)
-                        intent.putExtra("views", this@MainActivity.products[position].views)
-                        intent.putExtra("fuel", this@MainActivity.products[position].fuel)
-                        intent.putExtra("engineSize", this@MainActivity.products[position].engineSize)
-                        intent.putExtra("phone", this@MainActivity.products[position].phone)
-                        intent.putExtra("plate", this@MainActivity.products[position].plate)
-                        intent.putExtra("mileage", this@MainActivity.products[position].mileage)
-                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
-                        intent.putExtra("sold", this@MainActivity.products[position].sold)
-
-                        startActivity(intent)
-                    }
-                    "House" -> {
-                        val intent = Intent(this@MainActivity, HouseDetails::class.java)
-                        intent.putExtra("id", this@MainActivity.products[position].uid)
-                        intent.putExtra("location", this@MainActivity.products[position].location)
-                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
-                        intent.putExtra("price", this@MainActivity.products[position].price)
-                        intent.putExtra("imgUrls",products[position].pictures)
-                        intent.putExtra("category", this@MainActivity.products[position].category)
-                        intent.putExtra("description", this@MainActivity.products[position].description)
-                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
-                        intent.putExtra("size", this@MainActivity.products[position].size)
-                        intent.putExtra("houseType", this@MainActivity.products[position].houseType)
-                        intent.putExtra("views", this@MainActivity.products[position].views)
-                        intent.putExtra("phone", this@MainActivity.products[position].phone)
-                        intent.putExtra("seller", this@MainActivity.products[position].seller)
-                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
-                        intent.putExtra("sold", this@MainActivity.products[position].sold)
-
-                        startActivity(intent)
-                    }
-                    "Land" -> {
-                        val intent = Intent(this@MainActivity, LandDetails::class.java)
-                        intent.putExtra("id", this@MainActivity.products[position].uid)
-                        intent.putExtra("location", this@MainActivity.products[position].location)
-                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
-                        intent.putExtra("price", this@MainActivity.products[position].price)
-                        intent.putExtra("imgUrls",products[position].pictures)
-                        intent.putExtra("category", this@MainActivity.products[position].category)
-                        intent.putExtra("description", this@MainActivity.products[position].description)
-                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
-                        intent.putExtra("size", this@MainActivity.products[position].size)
-                        intent.putExtra("views", this@MainActivity.products[position].views)
-                        intent.putExtra("phone", this@MainActivity.products[position].phone)
-                        intent.putExtra("seller", this@MainActivity.products[position].seller)
-                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
-                        intent.putExtra("sold", this@MainActivity.products[position].sold)
-
-                        startActivity(intent)
-                    }
-                    "Other" -> {
-                        val intent = Intent(this@MainActivity, OtherDetails::class.java)
-                        intent.putExtra("id", this@MainActivity.products[position].uid)
-                        intent.putExtra("title", this@MainActivity.products[position].title)
-                        intent.putExtra("purpose", this@MainActivity.products[position].purpose)
-                        intent.putExtra("price", this@MainActivity.products[position].price)
-                        intent.putExtra("imgUrls",this@MainActivity.products[position].pictures)
-                        intent.putExtra("category", this@MainActivity.products[position].category)
-                        intent.putExtra("description", this@MainActivity.products[position].description)
-                        intent.putExtra("posted", this@MainActivity.products[position].postDate?.time)
-                        intent.putExtra("views", this@MainActivity.products[position].views)
-                        intent.putExtra("phone", this@MainActivity.products[position].phone)
-                        intent.putExtra("seller", this@MainActivity.products[position].seller)
-                        intent.putExtra("userPosted", this@MainActivity.products[position].userPosted)
-                        intent.putExtra("sold", this@MainActivity.products[position].sold)
-
-                        startActivity(intent)
-                    }
-                }
+                openProductDetailActivity(position)
             }
 
         })
@@ -443,6 +358,67 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         })
+    }
+
+    private fun openProductDetailActivity(position: Int) {
+        val productToView = ProductsModelParcelable().apply {
+            uid = products[position].uid
+            title = products[position].title
+            price = products[position].price
+            make = products[position].make
+            model = products[position].model
+            bathRooms = products[position].bathRooms
+            bedRooms = products[position].bedRooms
+            category = products[position].category
+            color = products[position].color
+            condition = products[position].condition
+            description = products[position].description
+            engineSize = products[position].engineSize
+            fuel = products[position].fuel
+            houseType = products[position].houseType
+            kitchenType = products[position].kitchenType
+            kitchens = products[position].kitchens
+            location = products[position].location
+            mileage = products[position].mileage
+            phone = products[position].phone
+            pictures = products[position].pictures
+            plate = products[position].plate
+            purpose = products[position].purpose
+            reported = products[position].reported
+            reportedNumber = products[position].reportedNumber
+            seller = products[position].seller
+            size = products[position].size
+            transmission = products[position].transmission
+            userPosted = products[position].userPosted
+            views = products[position].views
+            year = products[position].year
+            sold = products[position].sold
+            postDate = products[position].postDate
+            updateDate = products[position].updateDate
+        }
+
+        when (products[position].category) {
+            "Cars" -> {
+                val intent = Intent(this@MainActivity, CarDetails::class.java)
+                intent.putExtra("productToView", productToView)
+                startActivity(intent)
+            }
+            "House" -> {
+                val intent = Intent(this@MainActivity, HouseDetails::class.java)
+                intent.putExtra("productToView", productToView)
+                startActivity(intent)
+            }
+            "Land" -> {
+                val intent = Intent(this@MainActivity, LandDetails::class.java)
+                intent.putExtra("productToView", productToView)
+                startActivity(intent)
+            }
+            "Other" -> {
+                val intent = Intent(this@MainActivity, OtherDetails::class.java)
+                intent.putExtra("productToView", productToView)
+                startActivity(intent)
+            }
+        }
     }
 
     private fun disableCategoryButtons() {

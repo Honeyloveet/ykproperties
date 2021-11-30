@@ -20,10 +20,10 @@ import androidx.core.app.ActivityCompat
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import net.ykproperties.ykproperties.model.ProductsModelParcelable
 import java.text.NumberFormat
 import java.util.*
 
@@ -53,11 +53,13 @@ class HouseDetails : AppCompatActivity() {
     private lateinit var tvHouseOwnerOr: TextView
     private lateinit var tvHouseDetailStatus: TextView
 
-    private lateinit var auth: FirebaseAuth
-
     private val db = Firebase.firestore
 
     private var sellerPhone: Long = 0
+
+    private lateinit var product: ProductsModelParcelable
+
+    private val imageList = ArrayList<SlideModel>()
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,104 +67,28 @@ class HouseDetails : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_house_details)
 
-        val imageList = ArrayList<SlideModel>()
-
         toolbar = findViewById(R.id.toolBarDetails)
 
         setupCustomProgressDialog()
 
-        btnCallSeller = findViewById(R.id.btnCallSeller)
-        btnMessageSeller = findViewById(R.id.btnMessageSeller)
-
-        ivProductDetail = findViewById(R.id.ivProductDetail)
-        tvProductDetailsID = findViewById(R.id.tvProductDetailsID)
-        tvTitleProductDetails = findViewById(R.id.tvTitleProductDetails)
-        tvPriceProductDetails = findViewById(R.id.tvPriceProductDetails)
-        tvDescription = findViewById(R.id.tvDescription)
-        tvSizeDetails = findViewById(R.id.tvSizeDetails)
-        tvHouseForSaleOr = findViewById(R.id.tvHouseForSaleOr)
-        tvPostedDateProductDetails = findViewById(R.id.tvPostedDateProductDetails)
-        tvSeenProductDetails = findViewById(R.id.tvSeenProductDetails)
-        tvHouseTypeDetails = findViewById(R.id.tvHouseTypeDetails)
-        tvHouseOwnerOr = findViewById(R.id.tvHouseOwnerOr)
-        tvHouseDetailStatus = findViewById(R.id.tvHouseDetailStatus)
+        setupControlViews()
 
         progressDialog.show()
         progressDialog.findViewById<TextView>(R.id.tvProgressStatus).setTextColor(getColor(R.color.white))
         progressDialog.findViewById<TextView>(R.id.tvProgressStatus).text = "Loading..."
         progressDialog.window?.setBackgroundDrawableResource(R.color.progress_bar_background)
 
-        val bundle : Bundle? = intent.extras
-        val id = bundle!!.getString("id")
-        val location = bundle.getString("location")
-        val price = bundle.getLong("price")
-        val imgUrls = bundle.getStringArrayList("imgUrls")
-        val category = bundle.getString("category")
-        val description = bundle.getString("description")
-        val houseType = bundle.getString("houseType")
-        val size = bundle.getLong("size")
-        val purpose = bundle.getString("purpose")
-        val posted = bundle.getLong("posted")
-        val views = bundle.getLong("views")
-        val seller = bundle.getString("seller")
-        val userPosted = bundle.getString("userPosted")
-        val phone = bundle.getLong("phone")
-        val sold = bundle.getBoolean("sold")
+        product = intent.getParcelableExtra("productToView")!!
 
-        db.collection("products")
-            .document("$id")
-            .get()
-            .addOnSuccessListener { documentSnapshot ->
-                tvSeenProductDetails.text = documentSnapshot.get("views").toString()
-                progressDialog.dismiss()
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error Getting document", e)
-                progressDialog.dismiss()
-            }
+        getAndSetNoOfProductViewCount(product.uid.toString())
 
-        sellerPhone = phone
+        setProductValuesToViews(product)
 
-        if (imgUrls!!.size > 1) {
-            for (imgUrl in imgUrls) {
-                if (imgUrl != "") {
-                    imageList.add(SlideModel(imgUrl))
-                }
-            }
-        } else if (imgUrls.size == 1 && imgUrls[0] != "") {
-            imageList.add(SlideModel(imgUrls[0]))
-        } else {
-            imageList.add(SlideModel(R.drawable.category_house))
-        }
-
-        tvProductDetailsID.text = id
-        tvTitleProductDetails.text = "Location: $location"
-        tvPriceProductDetails.text = "Br ${NumberFormat.getInstance(Locale.US).format(price)}"
-        tvDescription.text = description
-        tvSizeDetails.text = "$size Square Meter"
-        tvHouseForSaleOr.text = purpose
-        tvHouseTypeDetails.text = houseType
-        tvHouseOwnerOr.text = seller
-        tvPostedDateProductDetails.text = DateUtils.getRelativeTimeSpanString(posted)
-        tvSeenProductDetails.text = views.toString()
-
-        ivProductDetail.setImageList(imageList)
-
-        if (sold) {
-            tvHouseDetailStatus.visibility = View.VISIBLE
-            tvHouseDetailStatus.bringToFront()
-        } else {
-            tvHouseDetailStatus.visibility = View.GONE
-        }
-
-        db.collection("products").document("$id")
-            .update("views", FieldValue.increment(1))
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+        updateViewCount(product.uid.toString())
 
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
-            title = category
+            title = product.category
             // show back button on toolbar
             // on back button press, it will navigate to parent activity
             setDisplayHomeAsUpEnabled(true)
@@ -174,9 +100,9 @@ class HouseDetails : AppCompatActivity() {
 
         ivProductDetail.setItemClickListener(object : ItemClickListener {
             override fun onItemSelected(position: Int) {
-                if (imgUrls[position] != "") {
+                if (product.pictures[position] != "") {
                     val intent = Intent(this@HouseDetails, FillScreenImageView::class.java)
-                    intent.putExtra("imgUrl", imgUrls[position])
+                    intent.putExtra("imgUrl", product.pictures[position])
                     startActivity(intent)
                 }
             }
@@ -198,6 +124,81 @@ class HouseDetails : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun getAndSetNoOfProductViewCount(uid: String) {
+        db.collection("products")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                tvSeenProductDetails.text = documentSnapshot.get("views").toString()
+                progressDialog.dismiss()
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error Getting document", e)
+                progressDialog.dismiss()
+            }
+    }
+
+    private fun updateViewCount(uid: String) {
+        db.collection("products").document(uid)
+            .update("views", FieldValue.increment(1))
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setProductValuesToViews(product: ProductsModelParcelable) {
+        sellerPhone = product.phone
+
+        if (product.pictures.size > 1) {
+            for (imgUrl in product.pictures) {
+                if (imgUrl != "") {
+                    imageList.add(SlideModel(imgUrl))
+                }
+            }
+        } else if (product.pictures.size == 1 && product.pictures[0] != "") {
+            imageList.add(SlideModel(product.pictures[0]))
+        } else {
+            imageList.add(SlideModel(R.drawable.category_house))
+        }
+
+        tvProductDetailsID.text = product.uid
+        tvTitleProductDetails.text = "Location: ${product.location}"
+        tvPriceProductDetails.text = "Br ${NumberFormat.getInstance(Locale.US).format(product.price)}"
+        tvDescription.text = product.description
+        tvSizeDetails.text = "${product.size} Square Meter"
+        tvHouseForSaleOr.text = product.purpose
+        tvHouseTypeDetails.text = product.houseType
+        tvHouseOwnerOr.text = product.seller
+        tvPostedDateProductDetails.text = DateUtils.getRelativeTimeSpanString(product.postDate?.time!!)
+
+        ivProductDetail.setImageList(imageList)
+
+        if (product.sold) {
+            tvHouseDetailStatus.visibility = View.VISIBLE
+            tvHouseDetailStatus.bringToFront()
+        } else {
+            tvHouseDetailStatus.visibility = View.GONE
+        }
+    }
+
+    private fun setupControlViews() {
+        btnCallSeller = findViewById(R.id.btnCallSeller)
+        btnMessageSeller = findViewById(R.id.btnMessageSeller)
+
+        ivProductDetail = findViewById(R.id.ivProductDetail)
+        tvProductDetailsID = findViewById(R.id.tvProductDetailsID)
+        tvTitleProductDetails = findViewById(R.id.tvTitleProductDetails)
+        tvPriceProductDetails = findViewById(R.id.tvPriceProductDetails)
+        tvDescription = findViewById(R.id.tvDescription)
+        tvSizeDetails = findViewById(R.id.tvSizeDetails)
+        tvHouseForSaleOr = findViewById(R.id.tvHouseForSaleOr)
+        tvPostedDateProductDetails = findViewById(R.id.tvPostedDateProductDetails)
+        tvSeenProductDetails = findViewById(R.id.tvSeenProductDetails)
+        tvHouseTypeDetails = findViewById(R.id.tvHouseTypeDetails)
+        tvHouseOwnerOr = findViewById(R.id.tvHouseOwnerOr)
+        tvHouseDetailStatus = findViewById(R.id.tvHouseDetailStatus)
     }
 
     private fun setupCustomProgressDialog() {

@@ -1132,7 +1132,7 @@ class AddPost : AppCompatActivity() {
         autoComTvCommonSaleOr.setText("")
         autoComTvCommonPhone.setText("")
         etCommonDesc.setText("")
-        etCommonPrice.text = null
+        etCommonPrice.setText("")
         autoComTvLandLocation.setText("")
         autoComTvLandSize.setText("")
         autoComTvHouseLocation.setText("")

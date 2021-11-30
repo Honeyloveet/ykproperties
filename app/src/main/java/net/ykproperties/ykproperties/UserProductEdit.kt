@@ -206,7 +206,9 @@ class UserProductEdit : AppCompatActivity() {
         deleteImagesFile()
 
         productToEdit = intent.getParcelableExtra("productToEdit")!!
+
         changeCategoryVisibility(productToEdit.category!!)
+
         setProductValuesToViews(productToEdit)
 
         toolbar = findViewById(R.id.toolBarProductEdit)
