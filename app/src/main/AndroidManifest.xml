@@ -28,8 +28,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YKProperties">
         <activity
+            android:name=".FilterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".UserProductEdit"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".CurrentUserProducts"
             android:exported="false"

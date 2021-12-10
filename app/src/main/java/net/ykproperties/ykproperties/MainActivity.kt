@@ -43,7 +43,6 @@ import net.ykproperties.ykproperties.model.ProductsModelParcelable
 import net.ykproperties.ykproperties.util.ConnectionLiveData
 import net.ykproperties.ykproperties.util.NetworkVariables
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -104,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var btnCatOther: ImageButton
     private lateinit var btnCatCars: ImageButton
 
-    private lateinit var navTvUserName: TextView
+    private lateinit var tvNavUserName: TextView
 
     private var selectedFilter = 1
     private var isLoggedIn: Boolean = false
@@ -160,6 +159,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rvItems = findViewById(R.id.rvItems)
 
         navView.setNavigationItemSelectedListener(this)
+
+        val header = navView.getHeaderView(0)
+        tvNavUserName = header.findViewById(R.id.tvNavUserName)
 
         // Instance of users list using the data model class.
 //        changeLoginLogoutMenu()
@@ -1213,7 +1215,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Firebase.auth.signOut()
             isLoggedIn = false
             changeLoginLogoutMenu()
-            navTvUserName.text = "Guest"
+            tvNavUserName.text = "Guest"
 
             dialog.dismiss()
         }
@@ -1246,7 +1248,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dialog = MaterialDialog(this)
             .noAutoDismiss()
             .cornerRadius(14f)
-            .customView(R.layout.layout_filter)
+            .customView(R.layout.layout_filter_dialog)
 
         when (selectedFilter) {
             1 -> {
@@ -1352,14 +1354,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (isLoggedIn) {
             navView.menu.clear()
             navView.inflateMenu(R.menu.menu_with_logout)
-            navTvUserName = findViewById(R.id.tvNavUserName)
-            navTvUserName.text = currentUserName
+            // Change Guest to User Name
+//            tvNavUserName = findViewById(R.id.tvNavUserName)
+            tvNavUserName.text = currentUserName
 //            navView.menu.removeItem()
         } else {
             navView.menu.clear()
             navView.inflateMenu(R.menu.menu_with_login)
-//            navTvUserName = findViewById(R.id.tvNavUserName)
-//            navTvUserName.text = "Guest"
+//            tvNavUserName = findViewById(R.id.tvNavUserName)
+            tvNavUserName.text = "Guest"
         }
 
 //        navView.menu.findItem(R.id.miLogin).isVisible = !isLoggedIn
