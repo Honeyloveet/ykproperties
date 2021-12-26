@@ -42,6 +42,7 @@ import net.ykproperties.ykproperties.model.ProductsModel
 import net.ykproperties.ykproperties.util.ConnectionLiveData
 import net.ykproperties.ykproperties.util.PriceInputWatcher
 import net.ykproperties.ykproperties.util.RequestPermissions
+import net.ykproperties.ykproperties.util.VehicleInfo
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -100,6 +101,8 @@ class AddPost : AppCompatActivity() {
 
     private lateinit var textInputLayoutCommonDesc: TextInputLayout
 
+    private lateinit var textInputLayoutModel: TextInputLayout
+
     private lateinit var cvCar: CardView
     private lateinit var cvHouse: CardView
     private lateinit var cvLand: CardView
@@ -140,6 +143,8 @@ class AddPost : AppCompatActivity() {
 
     private var pictureOneSelected: Boolean = false
     private var pictureTwoSelected: Boolean = false
+
+    private val makeYears = arrayListOf<String>()
 
     private val ivPhoto1: ImageView by lazy {
         findViewById(R.id.ivPhoto1)
@@ -222,6 +227,11 @@ class AddPost : AppCompatActivity() {
 
         auth = Firebase.auth
 
+        // add make year from 1900 to 2030 to array
+        for (i in 1900..2030) {
+            makeYears.add(i.toString())
+        }
+
         setupControlViews()
 
         toolbar = findViewById(R.id.toolBarDetails)
@@ -255,6 +265,41 @@ class AddPost : AppCompatActivity() {
             autoComTvCategories.setText(value.toString())
             setupControlDropDownLists()
         }
+
+        autoComTvMake.setOnItemClickListener { parent, _, position, _ ->
+            val a = parent.adapter
+            val make = a.getItem(position).toString().replace(Regex("\\s|[(.&,)-]|(</?.*?>)"),"") // Remove the unwanted charactors
+            val model = arrayListOf<String>()
+            for (vehicle in VehicleInfo.carMakeModel[make]!!) {
+                model.add(vehicle)
+            }
+            val arrayAdapterAutoComTvModel = ArrayAdapter(this, R.layout.drop_down_category, model)
+            autoComTvModel.setAdapter(arrayAdapterAutoComTvModel)
+//            Toast.makeText(this, make, Toast.LENGTH_SHORT).show()
+
+        }
+
+        autoComTvModel.setOnClickListener {
+            if (autoComTvMake.text.isBlank()) {
+                autoComTvMake.requestFocus()
+                Toast.makeText(this, "Select Make First", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+//        textInputLayoutModel.setEndIconOnClickListener {
+//            if (autoComTvMake.text.isBlank()) {
+//                autoComTvMake.requestFocus()
+//                Toast.makeText(this, "Select Make First", Toast.LENGTH_SHORT).show()
+//            }
+//
+//        }
+
+//        textInputLayoutModel.setOnClickListener {
+//            if (autoComTvMake.text.isBlank()) {
+//                autoComTvMake.requestFocus()
+//                Toast.makeText(this, "Select Make First", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
 //        etCommonPrice.addTextChangedListener(CurrencyInputWatcher(etCommonPrice,"Birr ", Locale.getDefault()))
         etCommonPrice.addTextChangedListener(PriceInputWatcher(etCommonPrice,"Birr ", Locale.getDefault()))
@@ -322,6 +367,7 @@ class AddPost : AppCompatActivity() {
         autoComTvEngineSize = findViewById(R.id.autoComTvEngineSize)
 
         textInputLayoutCommonDesc = findViewById(R.id.textInputLayoutCommonDesc)
+        textInputLayoutModel = findViewById(R.id.textInputLayoutModel)
 
         etCommonPrice = findViewById(R.id.etCommonPrice)
         etCommonDesc = findViewById(R.id.etCommonDesc)
@@ -346,6 +392,9 @@ class AddPost : AppCompatActivity() {
     }
 
     private fun setupControlDropDownLists() {
+
+        val arrayAdapterAutoComTvYear = ArrayAdapter(this, R.layout.drop_down_category, makeYears)
+        autoComTvYear.setAdapter(arrayAdapterAutoComTvYear)
 
         val ownerOrSeller = resources.getStringArray(R.array.seller)
         val arrayAdapterOwnerOrSeller = ArrayAdapter(this, R.layout.drop_down_category, ownerOrSeller)
@@ -821,9 +870,6 @@ class AddPost : AppCompatActivity() {
                 } else if (etCommonPrice.text!!.isBlank()) {
                     Toast.makeText(this, "Please input the price of the Car in Birr!", Toast.LENGTH_SHORT).show()
                     return false
-                } else if (etCommonDesc.text!!.isBlank()) {
-                    etCommonDesc.setText("")
-//                    return false
                 } else if (autoComTvCommonPhone.text.isBlank()) {
                     Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
                     return false

@@ -43,6 +43,7 @@ import net.ykproperties.ykproperties.model.ProductsModel
 import net.ykproperties.ykproperties.model.ProductsModelParcelable
 import net.ykproperties.ykproperties.util.ConnectionLiveData
 import net.ykproperties.ykproperties.util.RequestPermissions
+import net.ykproperties.ykproperties.util.VehicleInfo
 import java.io.File
 import java.io.IOException
 import java.text.NumberFormat
@@ -133,6 +134,8 @@ class UserProductEdit : AppCompatActivity() {
 
     private lateinit var productToEdit: ProductsModelParcelable
 
+    private val makeYears = arrayListOf<String>()
+
     //endregion
 
     private val selectPictureLauncherOne = registerForActivityResult(ActivityResultContracts.GetContent()){ uri ->
@@ -195,6 +198,11 @@ class UserProductEdit : AppCompatActivity() {
 
         auth = Firebase.auth
 
+        // add make year from 1900 to 2030 to array
+        for (i in 1900..2030) {
+            makeYears.add(i.toString())
+        }
+
         setupControlViews()
 
         setupCustomProgressDialog()
@@ -227,6 +235,31 @@ class UserProductEdit : AppCompatActivity() {
         }
 
         setupControlDropDownLists()
+
+        if (productToEdit.category == "Cars") {
+            if (autoComTvMake.text.isNotBlank()) {
+                val make = autoComTvMake.text.toString().replace(Regex("\\s|[(.&,)-]|(</?.*?>)"),"") // Remove the unwanted charactors
+                val model = arrayListOf<String>()
+                for (vehicle in VehicleInfo.carMakeModel[make]!!) {
+                    model.add(vehicle)
+                }
+                val arrayAdapterAutoComTvModel = ArrayAdapter(this, R.layout.drop_down_category, model)
+                autoComTvModel.setAdapter(arrayAdapterAutoComTvModel)
+            }
+        }
+
+        autoComTvMake.setOnItemClickListener { parent, _, position, _ ->
+            val a = parent.adapter
+            val make = a.getItem(position).toString().replace(Regex("\\s|[(.&,)-]|(</?.*?>)"),"") // Remove the unwanted charactors
+            val model = arrayListOf<String>()
+            for (vehicle in VehicleInfo.carMakeModel[make]!!) {
+                model.add(vehicle)
+            }
+            val arrayAdapterAutoComTvModel = ArrayAdapter(this, R.layout.drop_down_category, model)
+            autoComTvModel.setAdapter(arrayAdapterAutoComTvModel)
+//            Toast.makeText(this, make, Toast.LENGTH_SHORT).show()
+
+        }
 
         etCommonPrice.addTextChangedListener(CurrencyInputWatcher(etCommonPrice,"Birr ", Locale.getDefault()))
 
@@ -768,10 +801,6 @@ class UserProductEdit : AppCompatActivity() {
                         Toast.makeText(this, "Please input the price of the Car in Birr!", Toast.LENGTH_SHORT).show()
                         return false
                     }
-                    etCommonDesc.text!!.isBlank() -> {
-                        etCommonDesc.setText("")
-            //                    return false
-                    }
                     autoComTvCommonPhone.text.isBlank() -> {
                         Toast.makeText(this, "Please input Your Phone Number for buyers to contact you!", Toast.LENGTH_SHORT).show()
                         return false
@@ -1167,6 +1196,10 @@ class UserProductEdit : AppCompatActivity() {
     }
 
     private fun setupControlDropDownLists() {
+
+        val arrayAdapterAutoComTvYear = ArrayAdapter(this, R.layout.drop_down_category, makeYears)
+        autoComTvYear.setAdapter(arrayAdapterAutoComTvYear)
+
         val ownerOrSeller = resources.getStringArray(R.array.seller)
         val arrayAdapterOwnerOrSeller = ArrayAdapter(this, R.layout.drop_down_category, ownerOrSeller)
         autoComTvCommonOwnerOr.setAdapter(arrayAdapterOwnerOrSeller)

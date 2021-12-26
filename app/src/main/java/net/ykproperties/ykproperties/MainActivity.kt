@@ -1382,6 +1382,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         if (item.itemId == R.id.miFilter) {
 //            showFilterDialog()
+            val intent = Intent(this@MainActivity, FilterActivity::class.java)
+            startActivity(intent)
         }
         if (item.itemId == R.id.miGoHome) {
             if (!isLoading) {
