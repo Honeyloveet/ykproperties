@@ -3,7 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/categories_image_drop_shadow.xml" value="0.2755208333333333" />
+        <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/categories_image_drop_shadow.xml" value="0.176" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/category_image_button.xml" value="0.15" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/category_image_button_pressed.xml" value="0.15" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/curser.xml" value="0.2755208333333333" />
@@ -47,7 +47,7 @@
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/ic_share.xml" value="0.2755208333333333" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/login_layout_background.xml" value="0.2755208333333333" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/progress_bg.xml" value="0.2755208333333333" />
-        <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/search_custom_input.xml" value="0.2755208333333333" />
+        <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/drawable/search_custom_input.xml" value="0.176" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/activity_add_post.xml" value="0.16824324324324325" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/activity_car_details.xml" value="0.16824324324324325" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/activity_current_user_products.xml" value="0.176" />
@@ -63,8 +63,9 @@
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/current_user_products_view.xml" value="0.264" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/custom_progress_bar.xml" value="0.259375" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/drop_down_category.xml" value="0.4" />
-        <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/grid_item_view.xml" value="0.259375" />
+        <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/grid_item_view.xml" value="0.16824324324324325" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/layout_filter.xml" value="0.259375" />
+        <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/layout_filter_dialog.xml" value="0.16824324324324325" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/login_layout.xml" value="0.259375" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/logout_layout.xml" value="0.4" />
         <entry key="..\:/Users/Sam/AndroidStudioProjects/YKProperties2/app/src/main/res/layout/nav_header.xml" value="0.3773148148148148" />
